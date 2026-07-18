@@ -1,0 +1,70 @@
+# .github/workflows/sync-tokens.yml
+# ─────────────────────────────────────────────────────────────────
+# Triggered when the backend commits a new tokens.ts file to GitHub.
+# Rebuilds and deploys the Next.js app automatically.
+# ─────────────────────────────────────────────────────────────────
+
+name: Deploy on Token Sync
+
+on:
+  push:
+    paths:
+      - 'src/tokens/tokens.ts'   # Only runs when tokens.ts changes
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Build & Deploy Next.js
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # ── 1. Checkout the code ──────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Setup Node.js ──────────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # ── 3. Install dependencies ───────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ── 4. Build Next.js ──────────────────────────────────────
+      - name: Build Next.js app
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      # ── 5. Deploy ─────────────────────────────────────────────
+      # Choose ONE of the options below and delete the other.
+      # ─────────────────────────────────────────────────────────
+
+      # OPTION A: Deploy to Vercel (if your Next.js is on Vercel)
+      # Note: If you use Vercel, you don't even need this step —
+      # Vercel auto-deploys on every push automatically.
+      # You can delete this entire workflow if using Vercel.
+
+      # OPTION B: Deploy via SSH to your own server
+      # Uncomment and fill in your own SSH details:
+      #
+      # - name: Deploy via SSH
+      #   uses: appleboy/ssh-action@v1.0.3
+      #   with:
+      #     host: ${{ secrets.SSH_HOST }}
+      #     username: ${{ secrets.SSH_USER }}
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     script: |
+      #       cd /path/to/your/app
+      #       git pull origin main
+      #       npm ci
+      #       npm run build
+      #       pm2 restart your-app-name
+
+      - name: Notify success
+        run: echo "✅ Tokens synced and Next.js deployed successfully!"
