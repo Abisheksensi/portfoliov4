@@ -33,7 +33,7 @@ export default function MenuButton({
         display: "flex",
         alignItems: "center",
         gap: 16,
-        padding: `${tokens.tokens.space.button.padding.y}px ${tokens.primitives.number["16"]}px ${tokens.tokens.space.button.padding.x}px ${tokens.tokens.space.button.padding.x}px`,
+        padding: `${tokens.tokens.space.button.padding.y}px ${tokens.tokens.space.button.padding.x}px`,
         borderRadius: tokens.tokens.radiu["3xl"],
         background: bgColor,
         cursor: "pointer",
