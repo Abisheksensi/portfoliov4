@@ -7,72 +7,7 @@
 // Variables   : 23
 // ================================================================
 
-export const tokens = {
-  "tokens": {},
-  "primitives": {
-    "spacing0": 0,
-    "number": 0,
-    "spacing2": 2,
-    "spacing4": 4,
-    "spacing8": 8,
-    "spacing12": 12,
-    "spacing16": 16,
-    "spacing24": 24,
-    "spacing32": 32,
-    "spacing42": 42,
-    "spacing48": 48,
-    "spacing56": 56,
-    "spacing64": 64,
-    "spacing72": 72,
-    "spacing96": 96,
-    "spacing102": 102,
-    "spacing128": 128,
-    "spacing156": 156,
-    "spacing256": 256,
-    "colorsDark": "#151410",
-    "colorsLight": "#ffffff",
-    "colorsLimegreen": "#151410",
-    "colorsGrey": "#838383"
-  }
-} as const;
-
-// ─── Type helpers ────────────────────────────────────────────────
-
-export interface TokensColor {
-  primary: string;
-  secondary: string;
-  green: string;
-  grey: string;
-}
-
-export interface TokensPrimitives {
-  spacing0: number;
-  number: number;
-  spacing2: number;
-  spacing4: number;
-  spacing8: number;
-  spacing12: number;
-  spacing16: number;
-  spacing24: number;
-  spacing32: number;
-  spacing42: number;
-  spacing48: number;
-  spacing56: number;
-  spacing64: number;
-  spacing72: number;
-  spacing96: number;
-  spacing102: number;
-  spacing128: number;
-  spacing156: number;
-  spacing256: number;
-}
-
-export interface TokensStructure {
-  tokens: TokensColor;
-  primitives: TokensPrimitives;
-}
+export const tokens = {} as const;
 
 export type Tokens = typeof tokens;
-
 export type TokenCollections = keyof Tokens;
-
