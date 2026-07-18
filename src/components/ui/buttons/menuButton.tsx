@@ -4,10 +4,11 @@ import { motion } from "framer-motion";
 import { tokens } from "../../../tokens/tokens";
 
 interface MenuButtonProps {
-  text?: string;
-  onClick?: () => void;
-  circleColor?: string;
-  textColor?: string;
+  readonly text?: string;
+  readonly onClick?: () => void;
+  readonly circleColor?: string;
+  readonly textColor?: string;
+  readonly bgColor?: string;
 }
 
 export default function MenuButton({
