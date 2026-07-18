@@ -34,7 +34,7 @@ export default function MenuButton({
         alignItems: "center",
         gap: 16,
         padding: "0 12px 0 0",
-        border: "none",
+        borderRadius: tokens.tokens.radius["3xl"],
         background: bgColor,
         cursor: "pointer",
         color: textColor,

@@ -17,7 +17,7 @@ export const tokens = {
         }
       }
     },
-    "radiu": {
+    "radius": {
       "none": 0,
       "2x": 2,
       "x": 4,
