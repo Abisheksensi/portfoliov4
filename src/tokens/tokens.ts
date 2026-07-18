@@ -38,6 +38,40 @@ export const tokens = {
 
 // ─── Type helpers ────────────────────────────────────────────────
 
+export interface TokensColor {
+  primary: string;
+  secondary: string;
+  green: string;
+  grey: string;
+}
+
+export interface TokensPrimitives {
+  spacing0: number;
+  number: number;
+  spacing2: number;
+  spacing4: number;
+  spacing8: number;
+  spacing12: number;
+  spacing16: number;
+  spacing24: number;
+  spacing32: number;
+  spacing42: number;
+  spacing48: number;
+  spacing56: number;
+  spacing64: number;
+  spacing72: number;
+  spacing96: number;
+  spacing102: number;
+  spacing128: number;
+  spacing156: number;
+  spacing256: number;
+}
+
+export interface TokensStructure {
+  tokens: TokensColor;
+  primitives: TokensPrimitives;
+}
+
 export type Tokens = typeof tokens;
 
 export type TokenCollections = keyof Tokens;
