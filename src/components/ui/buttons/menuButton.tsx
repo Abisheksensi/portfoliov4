@@ -19,8 +19,8 @@ const ease = cubicBezier(0.22, 1, 0.36, 1);
 
 const buttonMotion = {
   initial: {
-    opacity: 0,
-    y: 22,
+    opacity: 1,
+    y: 0,
     scale: 0.98,
   },
 
@@ -94,6 +94,7 @@ const styles = {
     gap: 16,
     cursor: "pointer",
     userSelect: "none" as const,
+    overflow: "hidden" as const,
   },
 
   circle: {

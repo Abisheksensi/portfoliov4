@@ -10,7 +10,7 @@ export default function Home() {
         minHeight: "100vh",
       }}
     >
-      <div className="w-[193px] flex flex-col gap-[6px] items-start mb-8">
+      <div className="w-[193px] flex flex-col gap-[6px] items-start mb-2">
         <MenuButton />
         <VideoButton />
       </div>

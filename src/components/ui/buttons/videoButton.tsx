@@ -12,25 +12,29 @@ const ease = cubicBezier(0.22, 1, 0.36, 1);
 const cardMotion = {
   initial: {
     opacity: 1,
-    y: 24,
-    scalex: 1,
-    scaley: 1,
+    y: 0,
+    scaleX: 1,
+    scaleY: 2,
+    transformOrigin: "top",
   },
 
   animate: {
     opacity: 1,
     y: 0,
-    scalex: 1,
-    scaley: 1,
+    scaleX: 1,
+    scaleY: 1,
+    transformOrigin: "top",
   },
 
   whileHover: {
-    scalex: 1.02,
-    scaley: 1.02,
+    scaleX: 1.02,
+    scaleY: 1.02,
+    transformOrigin: "top",
   },
 
   whileTap: {
     scale: 0.98,
+    transformOrigin: "top",
   },
 
   transition: {
