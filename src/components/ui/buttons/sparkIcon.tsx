@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 interface SparkIconProps {
   readonly size?: number;
   readonly color?: string;
+  readonly  isactive?: boolean;
 }
 
 const outerDots = [
@@ -30,6 +31,7 @@ const innerDots = [
 export default function SparkIcon({
   size = 28,
   color = "#D4D4D4",
+  isactive = false,
 }: SparkIconProps) {
   return (
     <svg
@@ -41,12 +43,16 @@ export default function SparkIcon({
       {/* Outer Ring */}
       <motion.g
         style={{ transformOrigin: "14px 14px" }}
-        animate={{ rotate: 360 }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "linear",
-        }}
+        animate={
+          isactive 
+            ? { rotate: 360, scale: 1 } 
+            : { rotate: 0, scale: [1, 0.85, 1] } // Gentle pulse when idle
+        }
+        transition={
+          isactive
+            ? { duration: 3, repeat: Infinity, ease: "linear" }
+            : { duration: 2, repeat: Infinity, ease: "easeInOut" }
+        }
       >
         {outerDots.map(([cx, cy], i) => (
           <motion.circle
@@ -56,12 +62,13 @@ export default function SparkIcon({
             r={1.7}
             fill={color}
             animate={{
-              opacity: [1, 0.2, 1],
+              // A long, varied array of opacities simulates a random twinkling effect!
+              opacity: isactive ? [1, 0.08, 0.08, 0.02, 0.7, 0.3, 0.09, 0.01, 1] : 1, 
             }}
             transition={{
-              duration: 3,
+              duration: 4, // Lengthened slightly to fit all the random keyframes smoothly
               repeat: Infinity,
-              delay: i * 0.18,
+              delay: i * 0.27, // Staggering the delay makes every dot look uniquely random
               ease: "easeInOut",
             }}
           />
@@ -69,15 +76,21 @@ export default function SparkIcon({
       </motion.g>
 
       {/* Inner Diamond */}
+      {/* Inner Diamond */}
       <motion.g
         style={{ transformOrigin: "14px 14px" }}
-        animate={{ rotate: -360 }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "linear",
-        }}
+        animate={
+          isactive 
+            ? { rotate: -360, scale: 1 } 
+            : { rotate: 0, scale: [1, 0.85, 1] } // Gentle pulse when idle
+        }
+        transition={
+          isactive
+            ? { duration: 3, repeat: Infinity, ease: "linear" }
+            : { duration: 2, repeat: Infinity, ease: "easeInOut" }
+        }
       >
+
         {innerDots.map(([cx, cy], i) => (
           <motion.circle
             key={i}
@@ -86,12 +99,13 @@ export default function SparkIcon({
             r={1.7}
             fill={color}
             animate={{
-              opacity: [1, 0.35, 1],
+              // A slightly different varied array for the inner diamond
+              opacity: isactive ? [0.81, 0.4, 0.09, 0.01, 0.08, 0.02, 1] : 1,
             }}
             transition={{
-              duration: 3,
+              duration: 3.5,
               repeat: Infinity,
-              delay: i * 0.35,
+              delay: i * 0.42,
               ease: "easeInOut",
             }}
           />

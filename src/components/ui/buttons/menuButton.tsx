@@ -123,7 +123,7 @@ export default function MenuButton({
   onClick,
   circleColor = tokens.primitives.color.grey,
   textColor = tokens.primitives.color.light,
-  bgColor = tokens.primitives.color.dark,
+  bgColor = "#23282B"
 }: MenuButtonProps) {
   return (
     <motion.button

@@ -1,11 +1,21 @@
 'use client';
 
-import Hero from "../src/components/ui/sections/hero";
+import HeroToSecondSec from "../src/components/ui/sections/heroToSecondSec";
+import FloatingUI from "../src/components/ui/sections/floatingUi";
+import dynamic from "next/dynamic";
+
+const HeroToSecondTransition = dynamic(
+  () => import("../src/components/ui/sections/heroToSecondSec"),
+  { ssr: false }
+);
+
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gray-100">
-      <Hero />
+    <main className="min-h-screen bg-gray-100 ">
+      <HeroToSecondSec />
+      <FloatingUI />
+
     </main>
   );
 }

@@ -109,7 +109,7 @@ const styles = {
     padding: tokens.tokens.space.button.padding.y,
     border: "none",
     borderRadius: 24,
-    background: "rgba(23,23,23,0.95)",
+    background: "#23282B",
     display: "flex",
     flexDirection: "column" as const,
     gap: 16,

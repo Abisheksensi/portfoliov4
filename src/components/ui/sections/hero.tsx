@@ -1,10 +1,6 @@
-'use client';
+"use client";
 
-import MenuButton from "../buttons/menuButton";
-import VideoButton from "../buttons/videoButton";
-import CTAButton from "../buttons/ctaButton";
-import { motion } from "framer-motion";
-import { headingEntrance } from "../../../motions/typography/entrance";
+import HeroNoiseCanvas from "./heroNoiseCanvas";
 
 export default function Hero() {
   return (
@@ -14,28 +10,32 @@ export default function Hero() {
         backgroundImage: "url('/images/backgrounds/hero-bg.png')",
       }}
     >
-      <div className="absolute inset-0 " />
+      <div className="absolute inset-0 z-0 bg-black/5" />
+      <HeroNoiseCanvas />
 
       <div className="relative z-10 w-full flex flex-col p-3">
-        <div className="w-full flex justify-end mb-[6px]">
-          <div className="w-[193px] flex flex-col gap-[6px]">
-            <MenuButton />
-            <VideoButton />
+        <div className="w-full flex justify-between mb-[6px]">
+          <div className="inline-flex flex-col gap-2 items-start">
+            <div className="text-white text-[112px] font-bold font-['Neue_Haas_Grotesk_Display_Pro'] leading-none">
+              YOUR DIGITAL
+            </div>
+            <div className="inline-flex items-start gap-1 -mt-8">
+              <div className="text-white text-[112px] font-bold font-['Neue_Haas_Grotesk_Display_Pro'] leading-none">
+                PARTNER
+              </div>
+              {/* Fixed: removed h-8 so ® isn't clipped by text-6xl */}
+              <div className="text-white text-6xl font-medium font-['Neue_Haas_Grotesk_Display_Pro']">
+                ®
+              </div>
+            </div>
+            {/* Fixed: removed hardcoded h-[88px] and flex-col to prevent text clipping */}
+            <div className="w-[690px] text-white text-lg font-bold font-['Neue_Haas_Grotesk_Display_Pro'] leading-none">
+              I help private healthcare practices and clinics attract more
+              patients, increase revenue, and build digital systems that work
+              strategy, design, marketing, and AI as one integrated engine.
+            </div>
           </div>
         </div>
-
-        <div className="w-full flex items-center justify-center">
-          <motion.h1
-            {...headingEntrance.h1.reveal}
-            className="w-[500px] text-stone-950 text-6xl font-medium font-['Outfit'] leading-[48px] headline-shimmer"
-            data-text="A creative digital agency that goes all in or not at all."
-          >
-            A creative digital agency that goes all in or not at all.
-          </motion.h1>
-        </div>
-      </div>
-      <div className = "absolute bottom-3 left-3 z-10">
-      <CTAButton/>
       </div>
     </section>
   );
