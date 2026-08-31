@@ -1,74 +1,58 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import Hero from "./hero";
 import SecondSection, { SecondSectionHandle } from "./second";
 
-gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+gsap.registerPlugin(ScrollTrigger);
 
 export default function HeroToSecondTransition() {
-  const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const heroWrapRef = useRef<HTMLDivElement>(null);
   const heroInnerRef = useRef<HTMLDivElement>(null);
   const secondSectionRef = useRef<SecondSectionHandle>(null);
-  const isSnapping = useRef(false);
-  const snapForwardThreshold = 0.72;
-  const snapBackwardThreshold = 0.28;
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
+  
+  useLayoutEffect(() => {
     if (!containerRef.current || !heroWrapRef.current || !heroInnerRef.current) return;
 
     const ctx = gsap.context(() => {
-      /* ─── CRITICAL: Hide second text immediately before timeline runs ─── */
-      gsap.set(".second-second-text", { autoAlpha: 0, y: 0 });
+      const firstTextEl = secondSectionRef.current?.getFirstTextEl();
+      const secondTextEl = secondSectionRef.current?.getSecondTextEl();
+      const cardStageEl = secondSectionRef.current?.getCardStageEl();
+
+      if (!firstTextEl || !secondTextEl || !cardStageEl) {
+        return;
+      }
+
+      gsap.set(firstTextEl, { autoAlpha: 1, y: 0, filter: "blur(0px)" });
+      gsap.set(secondTextEl, { autoAlpha: 0, y: 40, filter: "blur(8px)" });
+      gsap.set(cardStageEl, { autoAlpha: 1 });
+      gsap.set(".what-i-do-left", { autoAlpha: 0, x: -60, scale: 0.95 });
+      gsap.set(".what-i-do-right", { autoAlpha: 0, x: -60, scale: 0.95 });
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
-          end: "+=280%",
+          end: "+=450%",
           pin: true,
-          scrub: 1.2,
-          onUpdate(self) {
-            if (isSnapping.current) return;
-
-            if (self.progress > snapForwardThreshold && self.direction > 0) {
-              isSnapping.current = true;
-              gsap.to(window, {
-                scrollTo: { y: self.end },
-                duration: 1.1,
-                ease: "power2.inOut",
-                overwrite: true,
-                onComplete: () => {
-                  isSnapping.current = false;
-                },
-              });
-            } else if (self.progress < snapBackwardThreshold && self.direction < 0) {
-              isSnapping.current = true;
-              gsap.to(window, {
-                scrollTo: { y: self.start },
-                duration: 1.1,
-                ease: "power2.inOut",
-                overwrite: true,
-                onComplete: () => {
-                  isSnapping.current = false;
-                },
-              });
-            }
+          scrub: 0.8,
+          anticipatePin: 1,
+          snap: {
+            snapTo: "labels",
+            duration: { min: 0.2, max: 0.5 },
+            delay: 0.05,
+            ease: "power2.out",
           },
         },
       });
 
-      /* ─── Phase 1: Hero shrinks ─── */
+      /* ─── State 0: Hero ─── */
+      tl.addLabel("hero", 0);
+
+      /* ─── Phase 1: Hero shrinks & blurs ─── */
       tl.to(heroWrapRef.current, {
         borderRadius: "16px",
         padding: "10px",
@@ -86,17 +70,11 @@ export default function HeroToSecondTransition() {
         "<"
       );
 
-      /* ─── Trigger scan on first text early ─── */
-      tl.call(() => {
-        secondSectionRef.current?.playScan();
-      }, undefined, 0.15);
-
-      /* ─── Phase 2: Hero blurs ─── */
       tl.to(
         heroInnerRef.current,
         {
-          filter: "blur(100px)",
-          opacity: 0.,
+          filter: "blur(80px)",
+          opacity: 0,
           scale: 0.98,
           duration: 0.35,
           ease: "none",
@@ -104,49 +82,110 @@ export default function HeroToSecondTransition() {
         "-=0.05"
       );
 
-      /* ─── Phase 3: Text crossfade ─── */
-      tl.fromTo(
-        ".second-first-text",
-        { autoAlpha: 1, y: 0 },
-        { autoAlpha: 0, y: -24, duration: 0.35, ease: "power2.out" },
-        2
+      /* ─── Trigger scan on first text once hero reveals it ─── */
+      tl.call(() => {
+        secondSectionRef.current?.playScan();
+      }, undefined, 0.5);
+
+      /* ─── State 1: First Text ─── */
+      tl.addLabel("firstText", 0.9);
+
+      /* ─── Phase 2: Fluid morph/crossfade between First Text & Second Text ─── */
+      tl.to(
+        firstTextEl,
+        {
+          autoAlpha: 0,
+          y: -40,
+          filter: "blur(8px)",
+          duration: 0.45,
+          ease: "power2.inOut",
+        },
+        1.5
       );
 
-      tl.fromTo(
-        ".second-second-text",
-        { autoAlpha: 0, y: 56 },
-        { autoAlpha: 1, y: 0, duration: 0.55, ease: "power2.out" },
-        2
+      tl.to(
+        secondTextEl,
+        {
+          autoAlpha: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 0.45,
+          ease: "power2.inOut",
+        },
+        1.6
       );
 
       tl.call(() => {
         secondSectionRef.current?.playSecondScan();
-      }, undefined, 2);
+      }, undefined, 1.95);
 
-      /* ─── Phase 4: Hero fades away ─── */
+      /* ─── State 2: Growth System Dwell ─── */
+      tl.addLabel("growthSystem", 2.6);
+
+      /* ─── Phase 3: Growth System cleanly exits completely BEFORE cards ─── */
+      tl.to(
+        secondTextEl,
+        {
+          autoAlpha: 0,
+          y: -40,
+          scale: 0.96,
+          filter: "blur(12px)",
+          duration: 0.35,
+          ease: "power2.in",
+        },
+        3.3
+      );
+
+      /* ─── Phase 4: Cards Enter as unified cards (Surfaces + Numbers + Content together) ─── */
+      tl.to(
+        ".what-i-do-left",
+        {
+          autoAlpha: 1,
+          x: 0,
+          scale: 1,
+          duration: 0.45,
+          stagger: 0.08,
+          ease: "power3.out",
+        },
+        3.7
+      );
+
+      tl.to(
+        ".what-i-do-right",
+        {
+          autoAlpha: 1,
+          x: 0,
+          scale: 1,
+          duration: 0.45,
+          stagger: 0.08,
+          ease: "power3.out",
+        },
+        4.1
+      );
+
+      /* ─── State 3: Cards Dwell ─── */
+      tl.addLabel("cards", 4.7);
+
+      /* ─── Phase 5: Hero wrapper fully fades ─── */
       tl.to(
         heroWrapRef.current,
         {
           opacity: 0,
+          pointerEvents: "none",
           duration: 0.05,
           ease: "none",
         },
-        "-=0.05"
+        0.8
       );
+
+      return () => {
+        tl.scrollTrigger?.kill();
+        tl.kill();
+      };
     }, containerRef);
 
     return () => ctx.revert();
-  }, [mounted]);
-
-  if (!mounted) {
-    return (
-      <div className="h-[100dvh] w-full bg-white">
-        <div className="h-full w-full p-[10px]">
-          <div className="w-full h-full rounded-[16px] overflow-hidden bg-stone-300" />
-        </div>
-      </div>
-    );
-  }
+  }, []);
 
   return (
     <div ref={containerRef} className="relative bg-white">

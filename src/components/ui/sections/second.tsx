@@ -2,15 +2,21 @@
 
 import { useRef, forwardRef, useImperativeHandle } from "react";
 import { gsap } from "gsap";
+import WhatIDo from "./whatIDo";
 
 export type SecondSectionHandle = {
   playScan: () => void;
   playSecondScan: () => void;
+  playCardScan: () => void;
+  getFirstTextEl: () => HTMLDivElement | null;
+  getSecondTextEl: () => HTMLDivElement | null;
+  getCardStageEl: () => HTMLDivElement | null;
 };
 
 const SecondSection = forwardRef<SecondSectionHandle>((_, ref) => {
   const firstScanRef = useRef<HTMLDivElement>(null);
   const secondScanRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const runScan = (target: HTMLDivElement | null) => {
     if (!target) return;
@@ -33,6 +39,12 @@ const SecondSection = forwardRef<SecondSectionHandle>((_, ref) => {
     playSecondScan: () => {
       runScan(secondScanRef.current);
     },
+    playCardScan: () => {
+      runScan(cardRef.current);
+    },
+    getFirstTextEl: () => firstScanRef.current,
+    getSecondTextEl: () => secondScanRef.current,
+    getCardStageEl: () => cardRef.current,
   }));
 
   const scanTextStyle: React.CSSProperties = {
@@ -52,7 +64,7 @@ const SecondSection = forwardRef<SecondSectionHandle>((_, ref) => {
   return (
     <section className="relative overflow-hidden min-h-screen bg-cover bg-center bg-no-repeat">
       <div className="w-full h-screen p-2.5 flex flex-col justify-start items-start gap-2.5">
-        <div className="self-stretch flex-1 relative bg-gradient-to-t  from-[#C1C2C3] to-[#E5E6E7] rounded-[28px] overflow-hidden">
+        <div className="self-stretch flex-1 relative bg-gradient-to-t from-[#C1C2C3] to-[#E5E6E7] rounded-[28px] overflow-hidden">
           
           {/* FIRST TEXT — fades out while scrolling */}
           <div
@@ -88,10 +100,10 @@ const SecondSection = forwardRef<SecondSectionHandle>((_, ref) => {
             </div>
           </div>
 
-          {/* SECOND TEXT — fades in while scrolling */}
-          <div 
+          {/* SECOND TEXT — stage 2 */}
+          <div
             ref={secondScanRef}
-            className="second-second-text absolute inset-0 w-full h-full inline-flex flex-col justify-center items-center gap-[8px]"
+            className="absolute inset-0 z-10 inline-flex h-full w-full flex-col items-center justify-center px-6 py-16"
             style={
               {
                 opacity: 0,
@@ -114,6 +126,31 @@ const SecondSection = forwardRef<SecondSectionHandle>((_, ref) => {
             </div>
           </div>
 
+          {/* CARD — stage 3 */}
+          <div
+            ref={cardRef}
+            className="absolute inset-0 z-20 flex justify-start"
+            style={
+              {
+                opacity: 0,
+                "--scan-x": "-20%",
+                "--scan-color": "#24282b",
+              } as React.CSSProperties
+            }
+          >
+            <div className="flex p-[6px] gap-[4px] w-full max-w-[850px] h-full">
+              {/* Left Column */}
+              <div className="flex flex-col flex-1 gap-[4px] h-full min-h-0">
+                <WhatIDo className="what-i-do-left rounded-tl-[20px]" />
+                <WhatIDo className="what-i-do-left rounded-bl-[20px]" />
+              </div>
+              {/* Right Column */}
+              <div className="flex flex-col flex-1 gap-[4px] h-full min-h-0">
+                <WhatIDo className="what-i-do-right" />
+                <WhatIDo className="what-i-do-right" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
