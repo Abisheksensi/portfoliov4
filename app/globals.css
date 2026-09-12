@@ -36,6 +36,40 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.pitch-deck-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+}
+
+.pitch-deck-scrollbar::-webkit-scrollbar {
+  width: 3px;
+}
+
+.pitch-deck-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pitch-deck-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.pitch-deck-grain {
+  background-image: repeating-radial-gradient(
+    circle at 20% 30%,
+    rgba(255, 255, 255, 0.08) 0,
+    rgba(255, 255, 255, 0.08) 0.5px,
+    transparent 0.8px,
+    transparent 3px
+  );
+  background-size: 5px 5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pitch-deck-scrollbar {
+    scroll-behavior: auto;
+  }
+}
+
 
 .headline-shimmer {
   position: relative;
