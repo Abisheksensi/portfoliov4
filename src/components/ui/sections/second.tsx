@@ -201,6 +201,11 @@ const SecondSection = forwardRef<SecondSectionHandle>((_, ref) => {
                   <WhatIDo
                     title="SEO & Patient Growth"
                     description="Dominating local medical searches and high-intent keywords to consistently drive new patient inquiries."
+                    videoSrc="/videos/compass.mp4"
+                    videoFit="cover"
+                    videoRenderScale={0.76}
+                    videoOffsetYRatio={0.1}
+                    videoStartDelayMs={100}
                     className="what-i-do-right"
                   />
                   <WhatIDo

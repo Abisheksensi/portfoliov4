@@ -61,6 +61,11 @@ export interface WhatIDoProps {
   title?: string;
   description?: string;
   videoSrc?: string;
+  videoCropWidthRatio?: number;
+  videoFit?: "crop" | "contain" | "cover";
+  videoRenderScale?: number;
+  videoOffsetYRatio?: number;
+  videoStartDelayMs?: number;
   className?: string;
 }
 
@@ -68,6 +73,11 @@ export default function WhatIDo({
   title = "Strategy & Positioning",
   description = "Aligning healthcare practice branding, patient acquisition funnels, and market positioning into one integrated growth system.",
   videoSrc = DEFAULT_VIDEO,
+  videoCropWidthRatio = 0.16,
+  videoFit = "crop",
+  videoRenderScale = 1,
+  videoOffsetYRatio = 0,
+  videoStartDelayMs = 0,
   className = "",
 }: WhatIDoProps) {
   const uid = useId().replace(/:/g, "");
@@ -97,7 +107,13 @@ export default function WhatIDo({
     const maskDiv = maskDivRef.current;
     if (!video || !canvas || !maskDiv) return;
 
-    video.play().catch(() => {});
+    if (videoStartDelayMs > 0) {
+      video.currentTime = 0;
+    }
+
+    const playTimeout = window.setTimeout(() => {
+      video.play().catch(() => {});
+    }, videoStartDelayMs);
     let raf: number;
 
     const tick = () => {
@@ -107,10 +123,57 @@ export default function WhatIDo({
           /* Zoom into the center of the video — smaller cropW = more zoom */
           const vw = video.videoWidth || video.clientWidth || 1920;
           const vh = video.videoHeight || video.clientHeight || 1080;
-          const cropW = vw * 0.16;           // take only 18% of width → strong zoom in
-          const cropX = (vw - cropW) / 2;    // always perfectly centered
           ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(video, cropX, 0, cropW, vh, 0, 0, canvas.width, canvas.height);
+
+          if (videoFit === "contain") {
+            const scale = Math.min(canvas.width / vw, canvas.height / vh);
+            const drawWidth = vw * scale;
+            const drawHeight = vh * scale;
+            const drawX = (canvas.width - drawWidth) / 2;
+            const drawY = (canvas.height - drawHeight) / 2;
+            ctx.drawImage(video, 0, 0, vw, vh, drawX, drawY, drawWidth, drawHeight);
+          } else if (videoFit === "cover") {
+            const sourceAspect = vw / vh;
+            const canvasAspect = canvas.width / canvas.height;
+            let sourceX = 0;
+            let sourceY = 0;
+            let sourceWidth = vw;
+            let sourceHeight = vh;
+
+            if (sourceAspect > canvasAspect) {
+              sourceWidth = vh * canvasAspect;
+              sourceX = (vw - sourceWidth) / 2;
+            } else {
+              sourceHeight = vw / canvasAspect;
+              sourceY = (vh - sourceHeight) / 2;
+            }
+
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const drawWidth = canvas.width * videoRenderScale;
+            const drawHeight = canvas.height * videoRenderScale;
+            const drawX = (canvas.width - drawWidth) / 2;
+            const drawY =
+              (canvas.height - drawHeight) / 2 +
+              canvas.height * videoOffsetYRatio;
+
+            ctx.drawImage(
+              video,
+              sourceX,
+              sourceY,
+              sourceWidth,
+              sourceHeight,
+              drawX,
+              drawY,
+              drawWidth,
+              drawHeight,
+            );
+          } else {
+            const cropW = vw * videoCropWidthRatio;
+            const cropX = (vw - cropW) / 2;
+            ctx.drawImage(video, cropX, 0, cropW, vh, 0, 0, canvas.width, canvas.height);
+          }
 
           /* Push live frame as the mask-image */
           const dataUrl = canvas.toDataURL("image/png");
@@ -125,10 +188,21 @@ export default function WhatIDo({
     tick();
 
     return () => {
+      window.clearTimeout(playTimeout);
       cancelAnimationFrame(raf);
       video.pause();
+      if (videoStartDelayMs > 0) {
+        video.currentTime = 0;
+      }
     };
-  }, [isHovered]);
+  }, [
+    isHovered,
+    videoCropWidthRatio,
+    videoFit,
+    videoOffsetYRatio,
+    videoRenderScale,
+    videoStartDelayMs,
+  ]);
 
   useEffect(() => {
     if (!isHovered) return;
@@ -193,7 +267,7 @@ export default function WhatIDo({
             leading-[10px]
             tracking-[2px]
             text-black/20
-            p-[8px]
+            p-0
             m-0
             overflow-hidden
             whitespace-pre
@@ -233,7 +307,7 @@ export default function WhatIDo({
               leading-[10px]
               tracking-[2px]
               text-black
-              p-[8px]
+              p-0
               m-0
               overflow-hidden
               whitespace-pre
@@ -272,7 +346,7 @@ export default function WhatIDo({
               leading-[10px]
               tracking-[2px]
               text-[#fc5d20]
-              p-[8px]
+              p-0
               m-0
               overflow-hidden
               whitespace-pre

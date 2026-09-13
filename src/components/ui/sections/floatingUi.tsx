@@ -1,8 +1,9 @@
 // components/FloatingUI.tsx
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import MenuButton from "../buttons/menuButton";
 import VideoButton from "../buttons/videoButton";
 import PitchDeckModal from "../pitchDeckModal";
@@ -14,11 +15,73 @@ interface FloatingUIProps {
 export default function FloatingUI({
   onContactTransitionStart,
 }: FloatingUIProps) {
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPitchDeckOpen, setIsPitchDeckOpen] = useState(false);
   const [isProfileStage, setIsProfileStage] = useState(false);
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
+  const selectedProjectIndexRef = useRef(0);
+  const targetProjectIndexRef = useRef(0);
+  const projectSequenceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const profileEntryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isProfileStageRef = useRef(false);
   const closePitchDeck = useCallback(() => setIsPitchDeckOpen(false), []);
+
+  const selectProjectImmediately = useCallback((index: number) => {
+    const nextIndex = Math.max(0, Math.min(3, index));
+    if (projectSequenceTimeoutRef.current) {
+      clearTimeout(projectSequenceTimeoutRef.current);
+      projectSequenceTimeoutRef.current = null;
+    }
+    targetProjectIndexRef.current = nextIndex;
+    selectedProjectIndexRef.current = nextIndex;
+    setSelectedProjectIndex(nextIndex);
+    window.dispatchEvent(
+      new CustomEvent("portfolio:project-selection", {
+        detail: { projectIndex: nextIndex },
+      })
+    );
+  }, []);
+
+  const queueProjectSelection = useCallback((index: number) => {
+    targetProjectIndexRef.current = Math.max(0, Math.min(3, index));
+
+    if (projectSequenceTimeoutRef.current) return;
+
+    const advance = () => {
+      const currentIndex = selectedProjectIndexRef.current;
+      const targetIndex = targetProjectIndexRef.current;
+
+      if (currentIndex === targetIndex) {
+        projectSequenceTimeoutRef.current = null;
+        return;
+      }
+
+      const nextIndex = currentIndex + Math.sign(targetIndex - currentIndex);
+      selectedProjectIndexRef.current = nextIndex;
+      setSelectedProjectIndex(nextIndex);
+      window.dispatchEvent(
+        new CustomEvent("portfolio:project-selection", {
+          detail: { projectIndex: nextIndex },
+        })
+      );
+      projectSequenceTimeoutRef.current = setTimeout(advance, 520);
+    };
+
+    advance();
+  }, []);
+
+  useEffect(() => {
+    if (pathname === "/") return;
+
+    const resetFrame = window.requestAnimationFrame(() => {
+      isProfileStageRef.current = false;
+      setIsProfileStage(false);
+      selectProjectImmediately(0);
+    });
+
+    return () => window.cancelAnimationFrame(resetFrame);
+  }, [pathname, selectProjectImmediately]);
 
   useEffect(() => {
     const openContactMenu = () => setIsMenuOpen(true);
@@ -35,15 +98,44 @@ export default function FloatingUI({
       ).detail;
       setIsProfileStage(active);
       if (typeof projectIndex === "number") {
-        setSelectedProjectIndex(projectIndex);
+        if (active && !isProfileStageRef.current) {
+          isProfileStageRef.current = true;
+          selectProjectImmediately(0);
+          targetProjectIndexRef.current = Math.max(0, Math.min(3, projectIndex));
+          profileEntryTimeoutRef.current = setTimeout(() => {
+            profileEntryTimeoutRef.current = null;
+            queueProjectSelection(targetProjectIndexRef.current);
+          }, 1000);
+        } else if (active && profileEntryTimeoutRef.current) {
+          targetProjectIndexRef.current = Math.max(0, Math.min(3, projectIndex));
+        } else if (active) {
+          queueProjectSelection(projectIndex);
+        } else {
+          isProfileStageRef.current = false;
+          if (profileEntryTimeoutRef.current) {
+            clearTimeout(profileEntryTimeoutRef.current);
+            profileEntryTimeoutRef.current = null;
+          }
+          selectProjectImmediately(0);
+        }
       }
       if (active) setIsMenuOpen(false);
     };
 
     window.addEventListener("portfolio:profile-stage", updateProfileStage);
     return () =>
-      window.removeEventListener("portfolio:profile-stage", updateProfileStage);
-  }, []);
+      {
+        window.removeEventListener("portfolio:profile-stage", updateProfileStage);
+        if (projectSequenceTimeoutRef.current) {
+          clearTimeout(projectSequenceTimeoutRef.current);
+          projectSequenceTimeoutRef.current = null;
+        }
+        if (profileEntryTimeoutRef.current) {
+          clearTimeout(profileEntryTimeoutRef.current);
+          profileEntryTimeoutRef.current = null;
+        }
+      };
+  }, [queueProjectSelection, selectProjectImmediately]);
 
   return (
     <>
@@ -85,7 +177,7 @@ export default function FloatingUI({
               <VideoButton
                 showProjectState={isProfileStage}
                 selectedProjectIndex={selectedProjectIndex}
-                onProjectSelect={setSelectedProjectIndex}
+                onProjectSelect={selectProjectImmediately}
                 onClick={() => setIsPitchDeckOpen((open) => !open)}
               />
             </motion.div>

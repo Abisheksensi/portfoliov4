@@ -27,6 +27,12 @@
   background: #040404;
 }
 
+.portraitFrame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
 .portrait {
   object-fit: cover;
   object-position: center 38%;
@@ -138,7 +144,14 @@
   line-height: 1.35;
 }
 
-.contactButton {
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.contactButton,
+.projectButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -154,16 +167,19 @@
   font-size: 16px;
   line-height: 1.5;
   cursor: pointer;
+  text-decoration: none;
   transition: background-color 220ms ease, color 220ms ease, transform 220ms ease;
 }
 
-.contactButton:hover {
+.contactButton:hover,
+.projectButton:hover {
   background: var(--profile-accent);
   color: var(--profile-ink);
   transform: translateY(-2px);
 }
 
-.contactButton:focus-visible {
+.contactButton:focus-visible,
+.projectButton:focus-visible {
   outline: 3px solid var(--profile-accent);
   outline-offset: 4px;
 }
@@ -173,7 +189,8 @@
   transition: transform 220ms ease;
 }
 
-.contactButton:hover .arrow {
+.contactButton:hover .arrow,
+.projectButton:hover .arrow {
   transform: translate(2px, -2px);
 }
 
@@ -247,6 +264,10 @@
   }
 
   .contactButton {
+    width: 100%;
+  }
+
+  .projectButton {
     width: 100%;
   }
 }

@@ -10,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const PROFILE_STAGE_START = 9.45;
 const PROFILE_PROJECT_COUNT = 4;
-const PROFILE_STAGE_DWELL = 4;
+const PROFILE_STAGE_DWELL = 8;
 
 export default function HeroToSecondTransition() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -90,7 +90,7 @@ export default function HeroToSecondTransition() {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
-          end: "+=800%",
+          end: "+=1000%",
           pin: true,
           scrub: 1,
           anticipatePin: 1,

@@ -1,20 +1,57 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { gsap } from "gsap";
 import Image from "next/image";
+import Link from "next/link";
 import portrait from "../../../assets/image/image.png";
 import { tokens } from "../../../tokens/tokens";
 import styles from "./profileOverview.module.css";
 
-const strengths = ["Research", "Accessibility", "Design systems"] as const;
 const portraitIntroEase = [1, -0.02, 0.12, 1] as const;
+
+const projectSlides = [
+  {
+    slug: "form-charleston",
+    name: "Form Charleston",
+    title: "Designing clear, accessible experiences for complex healthcare journeys.",
+    description:
+      "A healthcare-focused product design story presented through the real decisions, constraints, and outcomes that can be responsibly shared.",
+    strengths: ["Research", "Accessibility", "Design systems"],
+  },
+  {
+    slug: "blueshield",
+    name: "Blueshield",
+    title: "Simplifying complex healthcare choices into a clearer digital journey.",
+    description:
+      "A selected healthcare experience focused on making dense information easier to understand, navigate, and act on with confidence.",
+    strengths: ["Journey mapping", "Accessibility", "Interaction design"],
+  },
+  {
+    slug: "cryptolabs-otc",
+    name: "Cryptolabs OTC",
+    title: "Building clarity and trust into high-stakes OTC workflows.",
+    description:
+      "A product experience shaped around clear decisions, dependable interaction patterns, and a more confident path through complex transactions.",
+    strengths: ["Product strategy", "UX design", "Prototyping"],
+  },
+  {
+    slug: "activate-camera",
+    name: "Activate Camera",
+    title: "Making camera-led interactions feel simple, guided, and human.",
+    description:
+      "An interaction concept focused on reducing uncertainty and guiding people naturally from activation through successful completion.",
+    strengths: ["Interaction design", "Usability", "Motion"],
+  },
+] as const;
 
 export default function ProfileOverview() {
   const [isProfileActive, setIsProfileActive] = useState(false);
+  const [projectIndex, setProjectIndex] = useState(0);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const shouldReduceMotion = useReducedMotion();
+  const project = projectSlides[projectIndex] ?? projectSlides[0];
 
   useEffect(() => {
     const updateProfileStage = (event: Event) => {
@@ -22,9 +59,19 @@ export default function ProfileOverview() {
       setIsProfileActive(active);
     };
 
+    const updateProjectSelection = (event: Event) => {
+      const { projectIndex: nextProjectIndex } = (
+        event as CustomEvent<{ projectIndex: number }>
+      ).detail;
+      setProjectIndex(Math.max(0, Math.min(projectSlides.length - 1, nextProjectIndex)));
+    };
+
     window.addEventListener("portfolio:profile-stage", updateProfileStage);
-    return () =>
+    window.addEventListener("portfolio:project-selection", updateProjectSelection);
+    return () => {
       window.removeEventListener("portfolio:profile-stage", updateProfileStage);
+      window.removeEventListener("portfolio:project-selection", updateProjectSelection);
+    };
   }, []);
 
   useEffect(() => {
@@ -56,7 +103,7 @@ export default function ProfileOverview() {
     return () => {
       scan.kill();
     };
-  }, [isProfileActive, shouldReduceMotion]);
+  }, [isProfileActive, projectIndex, shouldReduceMotion]);
 
   const openContactMenu = () => {
     window.dispatchEvent(new CustomEvent("portfolio:open-contact-menu"));
@@ -101,25 +148,44 @@ export default function ProfileOverview() {
         }
         style={{ transformOrigin: "left center" }}
       >
-        <Image
-          src={portrait}
-          alt="Monochrome portrait of the product designer"
-          fill
-          sizes="(max-width: 900px) 100vw, 50vw"
-          className={styles.portrait}
-          unoptimized
-          priority={false}
-        />
-        <div className={styles.portraitShade} aria-hidden="true" />
+        <AnimatePresence initial={false}>
+          <motion.div
+            key={project.name}
+            className={styles.portraitFrame}
+            initial={shouldReduceMotion ? false : { opacity: 0, scale: 1.025 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.985 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.46, ease: "easeOut" }}
+          >
+            <Image
+              src={portrait}
+              alt={`Monochrome visual for ${project.name}`}
+              fill
+              sizes="(max-width: 900px) 100vw, 50vw"
+              className={styles.portrait}
+              unoptimized
+              priority={false}
+            />
+            <div className={styles.portraitShade} aria-hidden="true" />
+          </motion.div>
+        </AnimatePresence>
       </motion.div>
 
       <div className={styles.contentPanel}>
-        <div className={styles.content}>
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.div
+            key={project.name}
+            className={styles.content}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 22, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -16, filter: "blur(6px)" }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.46, ease: "easeOut" }}
+          >
           <div className={styles.copy}>
             <header className={styles.headingGroup}>
               <div className={styles.eyebrow}>
                 <span className={styles.statusDot} aria-hidden="true" />
-                <span>Product Designer</span>
+                <span>{project.name}</span>
               </div>
 
               <h2
@@ -144,21 +210,16 @@ export default function ProfileOverview() {
                   } as React.CSSProperties
                 }
               >
-                Designing clear, accessible experiences for complex healthcare
-                journeys.
+                {project.title}
               </h2>
             </header>
 
             <p className={styles.description}>
-              I work end to end—from framing ambiguous problems and mapping
-              patient flows to prototyping, usability testing, design systems,
-              and engineering handoff. Much of my healthcare work is protected
-              by NDA, so selected stories focus on the real decisions,
-              constraints, and outcomes I can responsibly share.
+              {project.description}
             </p>
 
             <ul className={styles.strengths} aria-label="Core product design strengths">
-              {strengths.map((strength) => (
+              {project.strengths.map((strength) => (
                 <li key={strength} className={styles.strength}>
                   {strength}
                 </li>
@@ -166,17 +227,24 @@ export default function ProfileOverview() {
             </ul>
           </div>
 
-          <button
-            type="button"
-            className={styles.contactButton}
-            onClick={openContactMenu}
-          >
-            <span>Get in touch</span>
-            <span className={styles.arrow} aria-hidden="true">
-              ↗
-            </span>
-          </button>
-        </div>
+          <div className={styles.actions}>
+            <Link className={styles.projectButton} href={`/work/${project.slug}`}>
+              <span>View case study</span>
+              <span className={styles.arrow} aria-hidden="true">↗</span>
+            </Link>
+            <button
+              type="button"
+              className={styles.contactButton}
+              onClick={openContactMenu}
+            >
+              <span>Get in touch</span>
+              <span className={styles.arrow} aria-hidden="true">
+                ↗
+              </span>
+            </button>
+          </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </section>
   );
