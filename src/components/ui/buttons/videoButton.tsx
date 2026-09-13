@@ -201,13 +201,14 @@ const styles = {
   },
 
   preview: {
+    position: "relative" as const,
+    overflow: "hidden",
     height :"100vh",
     width: "100%",
     borderRadius: 20,
     backgroundImage: "url('/images/backgrounds/hero-bg.png')",
     backgroundPosition: "66% 70%",
     backgroundSize: "cover",
-    filter: "grayscale(1)",
   },
 
   projectPreview: {
@@ -415,7 +416,24 @@ export default function VideoButton({
                 </motion.div>
               </div>
 
-              <motion.div {...previewMotion} style={styles.preview} />
+              <motion.div {...previewMotion} style={styles.preview}>
+                <video
+                  src="/videos/please_add_very_little_movemen.mp4"
+                  poster="/images/backgrounds/hero-bg.png"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="metadata"
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+                  style={{
+                    objectPosition: "center",
+                    transform: "translateY(6px) scale(1.15)",
+                    transformOrigin: "center",
+                  }}
+                />
+              </motion.div>
             </button>
           </motion.div>
         )}

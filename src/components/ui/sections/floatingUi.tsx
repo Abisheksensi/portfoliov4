@@ -7,7 +7,13 @@ import MenuButton from "../buttons/menuButton";
 import VideoButton from "../buttons/videoButton";
 import PitchDeckModal from "../pitchDeckModal";
 
-export default function FloatingUI() {
+interface FloatingUIProps {
+  readonly onContactTransitionStart?: () => void;
+}
+
+export default function FloatingUI({
+  onContactTransitionStart,
+}: FloatingUIProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPitchDeckOpen, setIsPitchDeckOpen] = useState(false);
   const [isProfileStage, setIsProfileStage] = useState(false);
@@ -56,6 +62,7 @@ export default function FloatingUI() {
               <MenuButton
                 isOpen={isMenuOpen}
                 onOpenChange={setIsMenuOpen}
+                onContactTransitionStart={onContactTransitionStart}
                 onPitchDeck={() => {
                   setIsMenuOpen(false);
                   setIsPitchDeckOpen(true);

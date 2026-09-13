@@ -6,22 +6,53 @@ import {
   motion,
   useReducedMotion,
 } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  type MouseEvent as ReactMouseEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { tokens } from "../../../tokens/tokens";
+import VideoNotePanel from "../sections/videoNotePanel";
 
 interface MenuButtonProps {
   readonly isOpen: boolean;
   readonly onOpenChange: (isOpen: boolean) => void;
   readonly onPitchDeck?: () => void;
+  readonly onContactTransitionStart?: () => void;
 }
 
-type PanelMode = "menu" | "schedule";
+type PanelMode = "menu" | "schedule" | "video";
+type ContactNavPhase = "initial" | "departing" | "collapsed" | "expanded";
 
 const ease = cubicBezier(0.22, 1, 0.36, 1);
 const logoGridSize = 16;
-const logoAnimationDuration = 1200;
+const logoAnimationDuration = 2000;
 const logoOrange = "#f8703e";
 const logoWhite = "#f6f6f6";
+const logoDotAxis = [
+  0, 4.96, 9.91, 14.87, 19.83, 24.78, 29.74, 34.7,
+  39.65, 44.61, 49.56, 54.52, 59.48, 64.44, 69.39, 74.35,
+] as const;
+const logoDotDelays = [
+  327, 301, 277, 254, 232, 212, 194, 180, 170, 164, 164, 170, 180, 194, 212, 232,
+  313, 286, 260, 235, 212, 189, 170, 153, 141, 135, 135, 141, 153, 170, 189, 212,
+  301, 274, 246, 220, 194, 170, 147, 128, 113, 105, 105, 113, 128, 147, 170, 194,
+  292, 264, 235, 207, 180, 153, 128, 105, 87, 76, 76, 87, 105, 128, 153, 180,
+  286, 257, 228, 199, 170, 141, 113, 87, 63, 47, 47, 63, 87, 113, 141, 170,
+  283, 254, 224, 194, 164, 135, 105, 76, 47, 21, 21, 47, 76, 105, 135, 164,
+  283, 254, 224, 194, 164, 135, 105, 76, 47, 21, 21, 47, 76, 105, 135, 164,
+  286, 257, 228, 199, 170, 141, 113, 87, 63, 47, 47, 63, 87, 113, 141, 170,
+  292, 264, 235, 207, 180, 153, 128, 105, 87, 76, 76, 87, 105, 128, 153, 180,
+  301, 274, 246, 220, 194, 170, 147, 128, 113, 105, 105, 113, 128, 147, 170, 194,
+  313, 286, 260, 235, 212, 189, 170, 153, 141, 135, 135, 141, 153, 170, 189, 212,
+  327, 301, 277, 254, 232, 212, 194, 180, 170, 164, 164, 170, 180, 194, 212, 232,
+  343, 319, 295, 274, 254, 235, 220, 207, 199, 194, 194, 199, 207, 220, 235, 254,
+  360, 337, 316, 295, 277, 260, 246, 235, 228, 224, 224, 228, 235, 246, 260, 277,
+  380, 358, 337, 319, 301, 286, 274, 264, 257, 254, 254, 257, 264, 274, 286, 301,
+  400, 380, 360, 343, 327, 313, 301, 292, 286, 283, 283, 286, 292, 301, 313, 327,
+] as const;
 const logoDots = new Set([
   "9,4", "10,4",
   "8,5", "9,5", "10,5", "11,5",
@@ -29,12 +60,16 @@ const logoDots = new Set([
   "9,7", "10,7",
 ]);
 
-const menuItems: ReadonlyArray<{ readonly label: string; readonly dots?: 2 | 4 }> = [
+const menuItems: ReadonlyArray<{
+  readonly label: string;
+  readonly dots?: 2 | 4;
+  readonly href?: string;
+}> = [
   { label: "Work" },
   { label: "What we do", dots: 4 },
   { label: "About us" },
-  { label: "Careers", dots: 2 },
-  { label: "Contact" },
+  { label: "Research", dots: 2, href: "/research" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const calendarDays: Array<number | null> = [
@@ -65,54 +100,68 @@ function BrandMark({ animationCycle }: { readonly animationCycle: number }) {
       (dot, index) => {
         const x = index % logoGridSize;
         const y = Math.floor(index / logoGridSize);
-        const delay = Math.round(
-          Math.sqrt((x - 9.5) ** 2 + (y - 5.5) ** 2) * 24
-        );
+        const delay = logoDotDelays[index];
         const isLogoDot = logoDots.has(`${x},${y}`);
-        const keyframes: Keyframe[] = [
-          { opacity: 0, backgroundColor: logoOrange, offset: 0 },
+        const opacityAnimation = dot.animate(
+          [
+            {
+              opacity: 0,
+              offset: 0,
+              easing: "steps(1, jump-end)",
+            },
+            {
+              opacity: 0,
+              offset: delay / logoAnimationDuration,
+              easing: "cubic-bezier(0, 0, 0.58, 1)",
+            },
+            {
+              opacity: 1,
+              offset: (delay + 200) / logoAnimationDuration,
+              easing: "steps(1, jump-end)",
+            },
+            {
+              opacity: 1,
+              offset: 1000 / logoAnimationDuration,
+              easing: "steps(1, jump-end)",
+            },
+            { opacity: 1, offset: 1 },
+          ],
           {
-            opacity: 0,
-            backgroundColor: logoOrange,
-            offset: delay / logoAnimationDuration,
-          },
-          {
-            opacity: 1,
-            backgroundColor: logoOrange,
-            offset: (delay + 240) / logoAnimationDuration,
-          },
-          ...(isLogoDot
-            ? []
-            : [
-                {
-                  opacity: 1,
-                  backgroundColor: logoOrange,
-                  offset: (delay + 140) / logoAnimationDuration,
-                },
-                {
-                  opacity: 1,
-                  backgroundColor: logoWhite,
-                  offset: (delay + 520) / logoAnimationDuration,
-                },
-              ]),
-          {
-            opacity: 1,
-            backgroundColor: isLogoDot ? logoOrange : logoWhite,
-            offset: 1,
-          },
-        ];
-
-        keyframes.sort(
-          (first, second) => (first.offset ?? 0) - (second.offset ?? 0)
+            duration: logoAnimationDuration,
+            iterations: 1,
+          }
         );
 
-        return dot.animate(keyframes, {
-          duration: logoAnimationDuration,
-          iterations: 1,
-          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
-        });
+        if (isLogoDot) return [opacityAnimation];
+
+        const colorAnimation = dot.animate(
+          [
+            {
+              backgroundColor: logoOrange,
+              offset: 0,
+              easing: "steps(1, jump-end)",
+            },
+            {
+              backgroundColor: logoOrange,
+              offset: (delay + 100) / logoAnimationDuration,
+              easing: "cubic-bezier(0, 0, 0.58, 1)",
+            },
+            {
+              backgroundColor: logoWhite,
+              offset: (delay + 350) / logoAnimationDuration,
+              easing: "steps(1, jump-end)",
+            },
+            { backgroundColor: logoWhite, offset: 1 },
+          ],
+          {
+            duration: logoAnimationDuration,
+            iterations: 1,
+          }
+        );
+
+        return [opacityAnimation, colorAnimation];
       }
-    );
+    ).flat();
 
     return () => {
       animations.forEach((animation) => animation.cancel());
@@ -128,7 +177,7 @@ function BrandMark({ animationCycle }: { readonly animationCycle: number }) {
     >
       <span
         ref={gridRef}
-        className="absolute left-[-13px] top-[-14px] grid h-[78.48px] w-[78.48px] grid-cols-[repeat(16,4.13px)] grid-rows-[repeat(16,4.13px)] gap-[0.83px]"
+        className="absolute left-[-13px] top-[-14px] h-[78.48px] w-[78.48px] overflow-hidden"
       >
         {Array.from({ length: logoGridSize * logoGridSize }, (_, index) => {
           const x = index % logoGridSize;
@@ -138,8 +187,12 @@ function BrandMark({ animationCycle }: { readonly animationCycle: number }) {
           return (
             <span
               key={index}
-              className="block h-[4.13px] w-[4.13px] rounded-full"
-              style={{ backgroundColor: isLogoDot ? logoOrange : logoWhite }}
+              className="absolute block h-[4.13px] w-[4.13px] rounded-full"
+              style={{
+                left: logoDotAxis[x],
+                top: logoDotAxis[y],
+                backgroundColor: isLogoDot ? logoOrange : logoWhite,
+              }}
             />
           );
         })}
@@ -174,6 +227,22 @@ function DotSpinner() {
       <circle cx="2.5" cy="14.5" r="2.1" fill="currentColor" />
       <circle cx="6.3" cy="5.7" r="2.1" fill="currentColor" />
     </motion.svg>
+  );
+}
+
+function MenuIcon() {
+  return (
+    <span
+      className="flex h-8 w-8 shrink-0 flex-col items-center justify-center gap-[5px]"
+      aria-hidden="true"
+    >
+      {Array.from({ length: 3 }, (_, index) => (
+        <span
+          key={index}
+          className="block h-[3px] w-7 rounded-full bg-[#edecec]"
+        />
+      ))}
+    </span>
   );
 }
 
@@ -226,9 +295,11 @@ function Chevron({ direction = "down" }: { readonly direction?: "down" | "left" 
 function NavigationPanel({
   onPitchDeck,
   onSchedule,
+  onNavigate,
 }: {
   readonly onPitchDeck?: () => void;
   readonly onSchedule: () => void;
+  readonly onNavigate: (href: string) => void;
 }) {
   return (
     <motion.div
@@ -244,6 +315,9 @@ function NavigationPanel({
           <motion.button
             key={item.label}
             type="button"
+            onClick={() => {
+              if (item.href) onNavigate(item.href);
+            }}
             className={`mx-7 flex h-[57px] w-[calc(100%-56px)] items-center justify-between border-[#3a3f42] text-2xl transition-colors hover:text-[#ff7a55] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#edecec] ${
               index < menuItems.length - 1 ? "border-b" : ""
             }`}
@@ -458,10 +532,20 @@ export default function MenuButton({
   isOpen,
   onOpenChange,
   onPitchDeck,
+  onContactTransitionStart,
 }: MenuButtonProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [panelMode, setPanelMode] = useState<PanelMode>("menu");
   const [logoAnimationCycle, setLogoAnimationCycle] = useState(0);
+  const [videoNoteStage, setVideoNoteStage] =
+    useState<"capture" | "review">("capture");
+  const [contactNavPhase, setContactNavPhase] =
+    useState<ContactNavPhase>("initial");
+  const contactEntryFromHomeRef = useRef(false);
+  const contactTransitionTimersRef = useRef<number[]>([]);
   const shouldReduceMotion = useReducedMotion();
+  const isContactPage = pathname === "/contact";
 
   const playLogoAnimation = () => {
     if (!shouldReduceMotion) {
@@ -469,9 +553,22 @@ export default function MenuButton({
     }
   };
 
-  const handleHeaderClick = () => {
+  const handleHeaderClick = (event: ReactMouseEvent<HTMLButtonElement>) => {
     if (!isOpen) {
-      setPanelMode("menu");
+      const requestedVideoNote = Boolean(
+        (event.target as HTMLElement).closest('[data-video-note-trigger="true"]')
+      );
+
+      if (
+        isContactPage &&
+        contactNavPhase === "expanded" &&
+        requestedVideoNote
+      ) {
+        setPanelMode("video");
+        setVideoNoteStage("capture");
+      } else {
+        setPanelMode("menu");
+      }
       onOpenChange(true);
       return;
     }
@@ -498,9 +595,69 @@ export default function MenuButton({
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [isOpen, onOpenChange]);
 
-  const headerLabel = !isOpen || panelMode === "schedule"
-    ? "Schedule a Calll"
-    : "No Awkward Talk";
+  useEffect(() => {
+    return () => {
+      contactTransitionTimersRef.current.forEach((timer) => {
+        window.clearTimeout(timer);
+      });
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isContactPage) {
+      const resetTimer = window.setTimeout(() => {
+        setContactNavPhase("initial");
+      }, 0);
+
+      return () => window.clearTimeout(resetTimer);
+    }
+
+    if (shouldReduceMotion) {
+      const reducedMotionTimer = window.setTimeout(() => {
+        setContactNavPhase("expanded");
+      }, 0);
+
+      return () => window.clearTimeout(reducedMotionTimer);
+    }
+
+    if (contactEntryFromHomeRef.current) {
+      contactEntryFromHomeRef.current = false;
+      const expandAfterArrivalTimer = window.setTimeout(() => {
+        setContactNavPhase("expanded");
+      }, 420);
+
+      return () => window.clearTimeout(expandAfterArrivalTimer);
+    }
+
+    const initialTimer = window.setTimeout(() => {
+      setContactNavPhase("initial");
+    }, 0);
+    const collapseTimer = window.setTimeout(() => {
+      setContactNavPhase("collapsed");
+    }, 180);
+    const expandTimer = window.setTimeout(() => {
+      setContactNavPhase("expanded");
+    }, 1050);
+
+    return () => {
+      window.clearTimeout(initialTimer);
+      window.clearTimeout(collapseTimer);
+      window.clearTimeout(expandTimer);
+    };
+  }, [isContactPage, shouldReduceMotion]);
+
+  const isContactNavCollapsed = contactNavPhase === "collapsed";
+  const isContactNavDeparting = contactNavPhase === "departing";
+  const isContactNavExpanded =
+    isContactPage && contactNavPhase === "expanded";
+
+  const headerLabel = isContactNavExpanded && panelMode !== "schedule"
+    ? panelMode === "video" && isOpen && videoNoteStage === "review"
+      ? "Setup the Video…"
+      : "Add Video Note"
+    : !isOpen || panelMode === "schedule"
+      ? "Schedule a Calll"
+      : "No Awkward Talk";
 
   return (
     <motion.div
@@ -513,21 +670,19 @@ export default function MenuButton({
         y: { duration: 0.5, ease },
         scale: { duration: 0.5, ease },
       }}
-      onPointerEnter={playLogoAnimation}
-      onFocusCapture={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-          playLogoAnimation();
-        }
-      }}
       onClickCapture={playLogoAnimation}
-      className="pitch-deck-scrollbar max-h-[calc(100dvh-32px)] w-full overflow-y-auto overflow-x-hidden rounded-[32px] bg-[#23282b] text-left text-[#edecec] shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
+      className={`pitch-deck-scrollbar mx-auto max-h-[calc(100dvh-32px)] overflow-y-auto overflow-x-hidden rounded-[32px] bg-[#23282b] text-left text-[#edecec] ${
+        isContactNavCollapsed ? "w-[60px]" : "w-full"
+      }`}
       style={{ fontFamily: tokens.typography.font.family.title }}
     >
       <motion.button
         layout="position"
         type="button"
         onClick={handleHeaderClick}
-        className="sticky top-0 z-10 flex h-[60px] w-full cursor-pointer items-center gap-5 overflow-hidden rounded-[32px] bg-[#23282b] py-1 pl-1 pr-[14px]"
+        className={`sticky top-0 z-10 flex h-[60px] w-full cursor-pointer items-center overflow-hidden rounded-[32px] bg-[#23282b] py-1 ${
+          isContactNavCollapsed ? "gap-0 px-1" : "gap-5 pl-1 pr-[14px]"
+        }`}
         whileTap={{ scale: 0.985 }}
         transition={{ type: "spring", bounce: 0.1, duration: 0.45 }}
         aria-expanded={isOpen}
@@ -537,39 +692,72 @@ export default function MenuButton({
       >
         <BrandMark animationCycle={logoAnimationCycle} />
 
-        <span className={`relative flex h-6 items-center overflow-hidden text-base leading-[1.5] tracking-[-0.01em] ${panelMode === "schedule" && isOpen ? "ml-auto flex-none" : "flex-1 justify-center"}`}>
-          <AnimatePresence mode="wait" initial={false}>
+        <AnimatePresence initial={false}>
+          {!isContactNavCollapsed ? (
             <motion.span
-              key={headerLabel}
-              initial={{ opacity: 0, y: 7 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -7 }}
-              transition={{ duration: 0.22, ease }}
-              className="whitespace-nowrap"
+              key="navbar-label"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, ease }}
+              data-video-note-trigger={
+                isContactNavExpanded && !isOpen ? "true" : undefined
+              }
+              className={`relative flex h-6 items-center overflow-hidden text-base leading-[1.5] tracking-[-0.01em] ${panelMode === "schedule" && isOpen ? "ml-auto flex-none" : "flex-1 justify-center"}`}
             >
-              {headerLabel}
-            </motion.span>
-          </AnimatePresence>
-        </span>
-
-        {panelMode !== "schedule" || !isOpen ? (
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center">
-            <AnimatePresence mode="wait" initial={false}>
-              {isOpen ? (
+              <AnimatePresence mode="wait" initial={false}>
                 <motion.span
-                  key="minus"
-                  className="h-0.5 w-6 bg-[#edecec]"
-                  initial={{ opacity: 0, scaleX: 0 }}
-                  animate={{ opacity: 1, scaleX: 1 }}
-                  exit={{ opacity: 0, scaleX: 0 }}
-                  transition={{ duration: 0.25, ease }}
-                />
-              ) : (
-                <DotSpinner key="dots" />
-              )}
-            </AnimatePresence>
-          </span>
-        ) : null}
+                  key={headerLabel}
+                  initial={{ opacity: 0, y: 7 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -7 }}
+                  transition={{ duration: 0.22, ease }}
+                  className="whitespace-nowrap"
+                >
+                  {headerLabel}
+                </motion.span>
+              </AnimatePresence>
+            </motion.span>
+          ) : null}
+        </AnimatePresence>
+
+        <AnimatePresence mode="wait" initial={false}>
+          {!isContactNavCollapsed && (panelMode !== "schedule" || !isOpen) ? (
+            <motion.span
+              key="navbar-control"
+              className="flex h-8 w-8 shrink-0 items-center justify-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, ease }}
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                {isOpen && panelMode !== "video" ? (
+                  <motion.span
+                    key="minus"
+                    className="h-0.5 w-6 bg-[#edecec]"
+                    initial={{ opacity: 0, scaleX: 0 }}
+                    animate={{ opacity: 1, scaleX: 1 }}
+                    exit={{ opacity: 0, scaleX: 0 }}
+                    transition={{ duration: 0.25, ease }}
+                  />
+                ) : isContactNavExpanded || isContactNavDeparting ? (
+                  <motion.span
+                    key="menu"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.24, ease }}
+                  >
+                    <MenuIcon />
+                  </motion.span>
+                ) : (
+                  <DotSpinner key="dots" />
+                )}
+              </AnimatePresence>
+            </motion.span>
+          ) : null}
+        </AnimatePresence>
       </motion.button>
 
       <AnimatePresence initial={false}>
@@ -592,9 +780,44 @@ export default function MenuButton({
                   key="navigation-panel"
                   onPitchDeck={onPitchDeck}
                   onSchedule={() => setPanelMode("schedule")}
+                  onNavigate={(href) => {
+                    setPanelMode("menu");
+                    onOpenChange(false);
+
+                    if (href === "/contact" && pathname !== "/contact") {
+                      setContactNavPhase("departing");
+
+                      contactTransitionTimersRef.current.forEach((timer) => {
+                        window.clearTimeout(timer);
+                      });
+
+                      const collapseTimer = window.setTimeout(() => {
+                        setContactNavPhase("collapsed");
+                        onContactTransitionStart?.();
+                      }, 520);
+                      const navigateTimer = window.setTimeout(() => {
+                        contactEntryFromHomeRef.current = true;
+                        router.push(href);
+                      }, 1180);
+
+                      contactTransitionTimersRef.current = [
+                        collapseTimer,
+                        navigateTimer,
+                      ];
+                      return;
+                    }
+
+                    router.push(href);
+                  }}
                 />
-              ) : (
+              ) : panelMode === "schedule" ? (
                 <SchedulePanel key="schedule-panel" />
+              ) : (
+                <VideoNotePanel
+                  key="video-note-panel"
+                  onStageChange={setVideoNoteStage}
+                  onSchedule={() => setPanelMode("schedule")}
+                />
               )}
             </AnimatePresence>
           </motion.div>
