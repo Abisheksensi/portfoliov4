@@ -65,8 +65,8 @@ const menuItems: ReadonlyArray<{
   readonly dots?: 2 | 4;
   readonly href?: string;
 }> = [
-  { label: "Work" },
-  { label: "What we do", dots: 4 },
+  { label: "Home", href: "/" },
+  { label: "Work", dots: 4 },
   { label: "About us" },
   { label: "Research", dots: 2, href: "/research" },
   { label: "Contact", href: "/contact" },

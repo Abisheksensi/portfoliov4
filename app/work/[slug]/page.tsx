@@ -5,19 +5,30 @@ import { notFound } from "next/navigation";
 import portrait from "../../../src/assets/image/image.png";
 import { getWorkProject, workProjects } from "../../../src/data/workProjects";
 import styles from "./workProject.module.css";
+import { hasProjectAccess } from "../../../src/lib/projectAccess";
+import ProjectGate, { LockProjectButton } from "./projectGate";
 
 type WorkProjectPageProps = {
   readonly params: Promise<{ slug: string }>;
 };
 
 export function generateStaticParams() {
-  return workProjects.map(({ slug }) => ({ slug }));
+  return workProjects.filter(({ slug }) => slug !== "form-charleston").map(({ slug }) => ({ slug }));
 }
 
 export async function generateMetadata({
   params,
 }: WorkProjectPageProps): Promise<Metadata> {
   const { slug } = await params;
+  if (slug === "form-charleston") {
+    return {
+      title: "Form Charleston — Private case study | Abishek Jayathilaka",
+      description: "Request access to the Form Charleston case study.",
+      robots: { index: false, follow: false, noarchive: true },
+      openGraph: { title: "Form Charleston — Private case study", description: "Password-protected selected work.", images: [] },
+      twitter: { card: "summary", title: "Form Charleston — Private case study", description: "Password-protected selected work.", images: [] },
+    };
+  }
   const project = getWorkProject(slug);
 
   if (!project) return {};
@@ -41,6 +52,7 @@ export async function generateMetadata({
 
 export default async function WorkProjectPage({ params }: WorkProjectPageProps) {
   const { slug } = await params;
+  if (slug === "form-charleston" && !await hasProjectAccess()) return <ProjectGate />;
   const project = getWorkProject(slug);
 
   if (!project) notFound();
@@ -60,6 +72,7 @@ export default async function WorkProjectPage({ params }: WorkProjectPageProps) 
               <span aria-hidden="true">←</span> Selected work
             </Link>
             <span>{project.number} / {String(workProjects.length).padStart(2, "0")}</span>
+            {slug === "form-charleston" ? <LockProjectButton /> : null}
           </div>
 
           <div className={styles.heroGrid}>
@@ -83,6 +96,7 @@ export default async function WorkProjectPage({ params }: WorkProjectPageProps) 
         <figure className={styles.projectVisual}>
           <Image
             src={portrait}
+            unoptimized
             alt={`Monochrome visual representing ${project.name}`}
             fill
             priority

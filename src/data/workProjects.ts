@@ -1,3 +1,5 @@
+import "server-only";
+
 export type WorkProject = {
   readonly slug: string;
   readonly name: string;
@@ -24,40 +26,37 @@ export const workProjects: readonly WorkProject[] = [
     slug: "form-charleston",
     name: "Form Charleston",
     number: "01",
-    discipline: "Healthcare product design",
+    discipline: "Fitness & wellness website",
     year: "Selected work",
-    title: "Designing clear, accessible experiences for complex healthcare journeys.",
+    title: "From discovering the studio to booking a first class.",
     description:
-      "A healthcare-focused product design story presented through the real decisions, constraints, and outcomes that can be responsibly shared.",
-    strengths: ["Research", "Accessibility", "Design systems"],
+      "A website for FORM Charleston, connecting Lagree studio discovery, first-visit guidance, and booking across two locations.",
+    strengths: ["Fitness & wellness", "Website creation", "Booking journey"],
     challenge:
-      "Healthcare journeys often ask people to understand unfamiliar information while making time-sensitive decisions. The experience needed a clearer structure without losing the detail required by the service.",
+      "New studio visitors need to understand the workout, choose a location, prepare for their first visit, and find a route to booking.",
     direction:
-      "The case study focuses on reducing cognitive load, establishing a dependable information hierarchy, and creating reusable patterns that help people move forward with confidence.",
+      "The published website connects studio identity with practical guidance and a Mariana Tek booking integration.",
     responsibilities: [
-      "Experience framing and journey mapping",
-      "Interaction and interface design",
-      "Accessible component thinking",
-      "Prototype and handoff alignment",
+      "Website creation for FORM Charleston",
     ],
     approach: [
       {
-        title: "Frame the journey",
+        title: "Discover the studio",
         description:
-          "Map the moments where uncertainty is highest and identify the information people need before taking the next step.",
+          "Introduce FORM through its public studio story, photography, and explanation of Lagree.",
       },
       {
-        title: "Make choices legible",
+        title: "Prepare for the first visit",
         description:
-          "Turn dense content into a calm hierarchy with clear states, predictable actions, and accessible interaction patterns.",
+          "Connect location information with arrival guidance, parking, and first-class expectations.",
       },
       {
-        title: "Build for continuity",
+        title: "Continue to booking",
         description:
-          "Carry validated patterns into a reusable system so the experience stays consistent as the product grows.",
+          "Present pricing alongside the third-party Mariana Tek booking integration.",
       },
     ],
-    principles: ["Clarity before decoration", "Accessible by default", "Consistency builds trust"],
+    principles: ["Introduce the experience", "Answer first-visit questions", "Make the next step visible"],
     accent: "#f8703e",
     imagePosition: "66% 70%",
   },

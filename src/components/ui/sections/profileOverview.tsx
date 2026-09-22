@@ -15,10 +15,10 @@ const projectSlides = [
   {
     slug: "form-charleston",
     name: "Form Charleston",
-    title: "Designing clear, accessible experiences for complex healthcare journeys.",
+    title: "From discovering the studio to booking a first class.",
     description:
-      "A healthcare-focused product design story presented through the real decisions, constraints, and outcomes that can be responsibly shared.",
-    strengths: ["Research", "Accessibility", "Design systems"],
+      "A website for FORM Charleston, connecting Lagree studio discovery, first-visit guidance, and booking across two locations.",
+    strengths: ["Fitness & wellness", "Website creation", "Booking journey"],
   },
   {
     slug: "blueshield",
@@ -186,6 +186,7 @@ export default function ProfileOverview() {
               <div className={styles.eyebrow}>
                 <span className={styles.statusDot} aria-hidden="true" />
                 <span>{project.name}</span>
+                {project.slug === "form-charleston" ? <span style={{ fontSize: 12 }}>🔒 Password protected</span> : null}
               </div>
 
               <h2
@@ -229,7 +230,7 @@ export default function ProfileOverview() {
 
           <div className={styles.actions}>
             <Link className={styles.projectButton} href={`/work/${project.slug}`}>
-              <span>View case study</span>
+              <span>{project.slug === "form-charleston" ? "🔒 View case study" : "View case study"}</span>
               <span className={styles.arrow} aria-hidden="true">↗</span>
             </Link>
             <button
