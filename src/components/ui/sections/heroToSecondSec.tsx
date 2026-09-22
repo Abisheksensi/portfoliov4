@@ -351,7 +351,7 @@ export default function HeroToSecondTransition() {
 
   return (
     <div ref={containerRef} className="relative bg-white">
-      <div className="h-[100dvh] w-full relative overflow-hidden p-[10px]">
+      <div className="h-[var(--viewport-height)] w-full relative overflow-hidden p-[var(--space-page)]">
         <div className="absolute inset-0 z-0 overflow-hidden">
           <SecondSection ref={secondSectionRef} />
         </div>

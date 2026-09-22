@@ -243,7 +243,7 @@ export default function WhatIDo({
           "--scan-x": "-20%",
         } as React.CSSProperties
       }
-      className={`group relative w-full flex flex-1 min-h-0 hover:flex-[1.45] max-w-[420px] overflow-hidden rounded-[0px] transition-all duration-500 ease-in-out cursor-pointer ${className}`}
+      className={`group relative flex min-h-0 w-full max-w-[min(100%,26.25rem)] flex-1 cursor-pointer overflow-hidden rounded-none transition-all duration-500 ease-in-out hover:flex-[1.45] ${className}`}
     >
       {/* Hidden video element + offscreen canvas for video-to-mask rendering */}
       <video ref={videoRef} src={videoSrc} loop muted playsInline aria-hidden="true" className="hidden" />
@@ -256,7 +256,7 @@ export default function WhatIDo({
       {/* GRAPHIC (Always visible numbers)          */}
       {/* ========================================= */}
 
-      <div className="relative h-full w-[200px] overflow-hidden z-10">
+      <div className="relative z-10 h-full w-[clamp(8.5rem,14vw,12.5rem)] overflow-hidden">
         {/* DEFAULT GREY NUMBERPAD (No Masking) */}
         <pre
           className={`
@@ -364,11 +364,11 @@ export default function WhatIDo({
       {/* ========================================= */}
 
       <div
-        className={`what-i-do-text relative z-10 flex h-full w-full flex-1 flex-col items-start justify-between gap-[10px] p-6 text-left text-[18px] text-[#23282b] ${outfit.className}`}
+        className={`what-i-do-text relative z-10 flex h-full w-full flex-1 flex-col items-start justify-between gap-[var(--space-xs)] p-[var(--space-sm)] text-left text-[length:var(--font-body-lg)] text-[#23282b] ${outfit.className}`}
       >
         <h3 className="relative self-stretch font-medium">{title}</h3>
 
-        <p className="relative self-stretch text-[16px] font-light text-[#888]">
+        <p className="relative self-stretch text-[length:var(--font-body)] font-light text-[#888]">
           {description}
         </p>
       </div>

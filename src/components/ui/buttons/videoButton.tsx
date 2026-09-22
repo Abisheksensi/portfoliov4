@@ -220,7 +220,7 @@ const styles = {
   preview: {
     position: "relative" as const,
     overflow: "hidden",
-    height :"100vh",
+    height: "var(--viewport-height)",
     width: "100%",
     borderRadius: 20,
     backgroundImage: "url('/images/backgrounds/hero-bg.png')",

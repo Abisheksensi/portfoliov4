@@ -308,9 +308,9 @@ function NavigationPanel({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }}
       transition={{ duration: 0.25, ease }}
-      className="pt-6"
+      className="pt-[var(--space-sm)]"
     >
-      <div className="h-[284px] w-full">
+      <div className="w-full px-[var(--space-md)]">
         {menuItems.map((item, index) => (
           <motion.button
             key={item.label}
@@ -318,7 +318,7 @@ function NavigationPanel({
             onClick={() => {
               if (item.href) onNavigate(item.href);
             }}
-            className={`mx-7 flex h-[57px] w-[calc(100%-56px)] items-center justify-between border-[#3a3f42] text-2xl transition-colors hover:text-[#ff7a55] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#edecec] ${
+            className={`flex min-h-[var(--control-height)] w-full items-center justify-between border-[#3a3f42] text-[clamp(1.125rem,0.3vw+1.05rem,1.375rem)] leading-snug transition-colors hover:text-[#ff7a55] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#edecec] ${
               index < menuItems.length - 1 ? "border-b" : ""
             }`}
             initial={{ opacity: 0, y: 8 }}
@@ -333,7 +333,7 @@ function NavigationPanel({
       </div>
 
       <motion.div
-        className="flex flex-col gap-[10px] px-5 pb-6 pt-5 text-[13px] font-medium uppercase"
+        className="flex flex-col gap-[var(--space-xs)] px-[var(--space-sm)] pb-[var(--space-sm)] pt-[var(--space-sm)] text-[length:var(--font-small)] font-medium uppercase"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 4 }}
@@ -342,14 +342,14 @@ function NavigationPanel({
         <button
           type="button"
           onClick={onPitchDeck}
-          className="flex h-[62px] w-full items-center justify-center rounded-lg border border-[#3a3a3a] transition-colors hover:border-[#edecec]/60 hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#edecec]"
+          className="flex min-h-[var(--control-height)] w-full items-center justify-center rounded-lg border border-[#3a3a3a] transition-colors hover:border-[#edecec]/60 hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#edecec]"
         >
           Our Pitchdeck
         </button>
         <button
           type="button"
           onClick={onSchedule}
-          className="flex h-[62px] w-full items-center justify-center rounded-lg bg-[#f0ebe0] text-xs text-[#23282b] transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#edecec]"
+          className="flex min-h-[var(--control-height)] w-full items-center justify-center rounded-lg bg-[#f0ebe0] text-[length:var(--font-label)] text-[#23282b] transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#edecec]"
         >
           Schedule a call
         </button>
@@ -671,16 +671,21 @@ export default function MenuButton({
         scale: { duration: 0.5, ease },
       }}
       onClickCapture={playLogoAnimation}
-      className={`pitch-deck-scrollbar mx-auto max-h-[calc(100dvh-32px)] overflow-y-auto overflow-x-hidden rounded-[32px] bg-[#23282b] text-left text-[#edecec] ${
-        isContactNavCollapsed ? "w-[60px]" : "w-full"
+      className={`pitch-deck-scrollbar mx-auto overflow-y-auto overflow-x-hidden bg-[#23282b] text-left text-[#edecec] ${
+        isOpen ? "rounded-[var(--surface-radius)]" : "rounded-full"
+      } ${
+        isContactNavCollapsed ? "w-[var(--control-height)]" : "w-full"
       }`}
-      style={{ fontFamily: tokens.typography.font.family.title }}
+      style={{
+        fontFamily: tokens.typography.font.family.title,
+        maxHeight: "calc(var(--viewport-height) - 2rem)",
+      }}
     >
       <motion.button
         layout="position"
         type="button"
         onClick={handleHeaderClick}
-        className={`sticky top-0 z-10 flex h-[60px] w-full cursor-pointer items-center overflow-hidden rounded-[32px] bg-[#23282b] py-1 ${
+        className={`sticky top-0 z-10 flex h-[var(--control-height)] w-full cursor-pointer items-center overflow-hidden rounded-full bg-[#23282b] py-1 ${
           isContactNavCollapsed ? "gap-0 px-1" : "gap-5 pl-1 pr-[14px]"
         }`}
         whileTap={{ scale: 0.985 }}

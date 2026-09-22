@@ -28,7 +28,7 @@ export default function SiteShell({
     <>
       <motion.div
         key={pathname}
-        className="min-h-screen origin-top"
+        className="min-h-[var(--viewport-height)] origin-top"
         initial={
           pathname === "/contact" && !shouldReduceMotion
             ? {

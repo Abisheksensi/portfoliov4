@@ -1,5 +1,4 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, Outfit, DM_Sans } from "next/font/google";
+import { Geist, Geist_Mono, Outfit, DM_Sans, Google_Sans_Flex } from "next/font/google";
 import SiteShell from "./siteShell";
 import "./globals.css";
 
@@ -25,6 +24,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const googleSansFlex = Google_Sans_Flex({
+  variable: "--font-google-sans-flex",
+  subsets: ["latin"],
+  weight: "variable",
+  axes: ["opsz", "wdth"],
+});
+
 
 export default function RootLayout({
   children,
@@ -34,7 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} ${dmSans.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} ${dmSans.variable} ${googleSansFlex.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <SiteShell>{children}</SiteShell>

@@ -82,14 +82,14 @@ const SecondSection = forwardRef<SecondSectionHandle>((_, ref) => {
   };
 
   return (
-    <section className="relative overflow-hidden min-h-screen bg-cover bg-center bg-no-repeat">
-      <div className="w-full h-screen p-2.5 flex flex-col justify-start items-start gap-2.5">
-        <div className="self-stretch flex-1 relative bg-gradient-to-t from-[#C1C2C3] to-[#E5E6E7] rounded-[28px] overflow-hidden">
+    <section className="relative min-h-[var(--viewport-height)] overflow-hidden bg-cover bg-center bg-no-repeat">
+      <div className="flex h-[var(--viewport-height)] w-full flex-col items-start justify-start gap-[var(--space-2xs)] p-[var(--space-page)]">
+        <div className="relative flex-1 self-stretch overflow-hidden rounded-[var(--surface-radius)] bg-gradient-to-t from-[#C1C2C3] to-[#E5E6E7]">
           
           {/* FIRST TEXT — fades out while scrolling */}
           <div
             ref={firstScanRef}
-            className="second-first-text absolute inset-0 w-full h-full inline-flex flex-col justify-center items-center gap-8"
+            className="second-first-text absolute inset-0 inline-flex h-full w-full flex-col items-center justify-center gap-[var(--space-md)] px-[var(--container-x)]"
             style={
               {
                 "--scan-x": "-20%",
@@ -99,21 +99,21 @@ const SecondSection = forwardRef<SecondSectionHandle>((_, ref) => {
           >
             <div className="justify-center self-center text-center">
               <span
-                className="text-zinc-800 text-5xl font-medium font-['Neue_Haas_Grotesk_Display_Pro']"
+                className="text-[clamp(1.75rem,3.2vw,3rem)] font-medium text-zinc-800 font-['Neue_Haas_Grotesk_Display_Pro']"
                 style={scanTextStyle}
               >
                 Most healthcare practices manage <br />
                 Web design, Marketing &amp; SEO{" "}
               </span>
               <span
-                className="text-zinc-800 text-5xl font-semibold font-['Neue_Haas_Grotesk_Display_Pro']"
+                className="text-[clamp(1.75rem,3.2vw,3rem)] font-semibold text-zinc-800 font-['Neue_Haas_Grotesk_Display_Pro']"
                 style={scanTextStyle}
               >
                 separately.
               </span>
             </div>
             <div
-              className="self-stretch text-center justify-start text-zinc-800 text-5xl font-semibold font-['Neue_Haas_Grotesk_Display_Pro']"
+              className="self-stretch text-center text-[clamp(1.75rem,3.2vw,3rem)] font-semibold text-zinc-800 font-['Neue_Haas_Grotesk_Display_Pro']"
               style={scanTextStyle}
             >
               Disconnected strategies lead to disconnected results.
@@ -123,7 +123,7 @@ const SecondSection = forwardRef<SecondSectionHandle>((_, ref) => {
           {/* SECOND TEXT — stage 2 */}
           <div
             ref={secondScanRef}
-            className="absolute inset-0 z-10 inline-flex h-full w-full flex-col items-center justify-center px-6 py-16"
+            className="absolute inset-0 z-10 inline-flex h-full w-full flex-col items-center justify-center px-[var(--container-x)] py-[var(--space-xl)]"
             style={
               {
                 "--scan-x": "-20%",
@@ -132,13 +132,13 @@ const SecondSection = forwardRef<SecondSectionHandle>((_, ref) => {
             }
           >
             <div
-              className="text-center justify-start text-zinc-800 text-6xl font-medium font-['Neue_Haas_Grotesk_Display_Pro'] leading-[88px]"
+              className="text-center text-[clamp(2rem,4vw,3.75rem)] font-medium leading-[1.05] text-zinc-800 font-['Neue_Haas_Grotesk_Display_Pro']"
               style={scanTextStyle}
             >
               I unify them into one
             </div>
             <div
-              className="text-center justify-start text-zinc-800 text-8xl font-bold font-['Neue_Haas_Grotesk_Display_Pro'] leading-[88px]"
+              className="text-center text-[clamp(3rem,6.7vw,6rem)] font-bold leading-[0.95] text-zinc-800 font-['Neue_Haas_Grotesk_Display_Pro']"
               style={scanTextStyle}
             >
               GROWTH SYSTEM.
@@ -160,7 +160,7 @@ const SecondSection = forwardRef<SecondSectionHandle>((_, ref) => {
             {/* White sliding block — GSAP moves this in from left as one rectangle */}
             <div
               ref={cardBlockRef}
-              className="relative flex p-[6px] w-full max-w-[850px] h-full overflow-hidden"
+              className="relative flex h-full w-full max-w-[min(100%,53.125rem)] overflow-hidden p-[var(--space-2xs)]"
               style={{ gap: 0 }}
             >
             {/* White morph line — animates width then height, fades to reveal cards */}
@@ -219,7 +219,7 @@ const SecondSection = forwardRef<SecondSectionHandle>((_, ref) => {
 
             {/* Right area heading — reveals with scan + clip slide-up */}
             <div
-              className="flex flex-1 items-center justify-center px-8"
+              className="flex flex-1 items-center justify-center px-[var(--space-md)]"
               style={{ overflow: "hidden" }}
             >
               <div
@@ -233,13 +233,13 @@ const SecondSection = forwardRef<SecondSectionHandle>((_, ref) => {
                 } as React.CSSProperties}
               >
                 <div
-                  className="text-zinc-800 text-4xl font-medium font-['Neue_Haas_Grotesk_Display_Pro'] leading-tight"
+                  className="text-[clamp(1.75rem,2.5vw,2.5rem)] font-medium leading-tight text-zinc-800 font-['Neue_Haas_Grotesk_Display_Pro']"
                   style={scanTextStyle}
                 >
                   This is the heading
                 </div>
                 <div
-                  className="text-zinc-800 text-6xl font-bold font-['Neue_Haas_Grotesk_Display_Pro'] leading-tight"
+                  className="text-[clamp(2.5rem,4vw,4rem)] font-bold leading-[0.98] text-zinc-800 font-['Neue_Haas_Grotesk_Display_Pro']"
                   style={scanTextStyle}
                 >
                   to the cards.

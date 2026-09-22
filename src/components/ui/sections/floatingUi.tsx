@@ -144,7 +144,8 @@ export default function FloatingUI({
         <AnimatePresence initial={false}>
           {!isProfileStage ? (
             <motion.nav
-              className="absolute left-1/2 top-4 w-[min(386px,calc(100vw-32px))] -translate-x-1/2 pointer-events-auto"
+              className="pointer-events-auto absolute left-1/2 top-[var(--space-sm)] -translate-x-1/2"
+              style={{ width: "min(clamp(18rem, 32vw, 24.125rem), calc(100vw - 2rem))" }}
               aria-label="Primary navigation"
               initial={{ opacity: 0, y: -12, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -168,7 +169,7 @@ export default function FloatingUI({
         <AnimatePresence initial={false}>
           {!isMenuOpen ? (
             <motion.div
-              className="absolute right-4 top-20 pointer-events-auto xl:top-4"
+              className="pointer-events-auto absolute right-[var(--space-sm)] top-[clamp(5rem,8vw,6rem)] xl:top-[var(--space-sm)]"
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.97 }}

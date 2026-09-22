@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -8,64 +9,120 @@ const DECK_IMAGE = "/images/backgrounds/hero-bg.png";
 
 const slides = [
   {
-    title: "Welcome",
-    eyebrow: "Your digital partner",
-    headline: "Digital growth, designed as one system.",
-    body: "Strategy, design, marketing and AI working together to turn attention into trust, and trust into sustainable growth.",
+    title: "Introduction",
+    eyebrow: "Abishek Jayathilaka",
+    headline: "Clear digital experiences for complex ideas.",
+    body: "I combine product thinking, interface design and implementation to create digital experiences that feel focused, useful and memorable.",
+    items: [
+      { label: "Focus", value: "Product design" },
+      { label: "Craft", value: "Web experiences" },
+      { label: "Approach", value: "Strategy to delivery" },
+    ],
   },
   {
-    title: "Who we are",
-    eyebrow: "Independent by design",
-    headline: "Small team energy. Senior-level thinking.",
-    body: "A hands-on digital partner for ambitious healthcare practices that want sharper positioning, stronger patient journeys and measurable momentum.",
+    title: "The challenge",
+    eyebrow: "Why the work matters",
+    headline: "Disconnected decisions create disconnected experiences.",
+    body: "When strategy, content, design and technology are treated separately, people feel the gaps. The work starts by creating one clear direction.",
+    items: [
+      { label: "01", value: "Unclear positioning" },
+      { label: "02", value: "Fragmented journeys" },
+      { label: "03", value: "Inconsistent interfaces" },
+      { label: "04", value: "Hidden next steps" },
+    ],
   },
   {
-    title: "What we do",
-    eyebrow: "One connected engine",
-    headline: "From first impression to booked appointment.",
-    body: "Brand strategy, high-converting websites, local search, patient acquisition and intelligent automation—built to perform together.",
+    title: "Positioning",
+    eyebrow: "One connected system",
+    headline: "Strategy, design and technology—shaped together.",
+    body: "I translate business goals and user needs into a coherent system: the right message, the right interaction and a build that preserves the intent.",
+    items: [
+      { label: "Clarify", value: "Define the real problem" },
+      { label: "Connect", value: "Align the complete journey" },
+      { label: "Create", value: "Design a distinct experience" },
+      { label: "Deliver", value: "Turn direction into reality" },
+    ],
   },
   {
-    title: "Our vibe",
-    eyebrow: "Clear over clever",
-    headline: "Serious about results. Easy to work with.",
-    body: "Direct communication, thoughtful craft and a bias toward action. No theatre, no hand-offs, no strategy decks that gather dust.",
+    title: "Capabilities",
+    eyebrow: "What I bring",
+    headline: "A focused capability set, built around the experience.",
+    body: "Each capability supports the same goal: helping people understand what matters, feel confident and take the next step.",
+    items: [
+      { label: "Strategy", value: "Positioning & product direction" },
+      { label: "Experience", value: "UX, flows & information architecture" },
+      { label: "Interface", value: "Visual systems & interaction design" },
+      { label: "Delivery", value: "Prototyping & front-end implementation" },
+    ],
   },
   {
-    title: "Core values",
-    eyebrow: "How the work gets done",
-    headline: "Clarity. Craft. Curiosity. Commitment.",
-    body: "Every decision earns its place. Every detail supports the bigger goal. Every engagement is treated like a partnership, not a transaction.",
+    title: "Process",
+    eyebrow: "How I work",
+    headline: "Understand deeply. Make deliberately. Improve continuously.",
+    body: "The process stays collaborative and visible, with decisions connected to the problem instead of personal preference.",
+    items: [
+      { label: "01 / Discover", value: "Context, users and constraints" },
+      { label: "02 / Define", value: "Priorities and experience direction" },
+      { label: "03 / Design", value: "Flows, systems and interfaces" },
+      { label: "04 / Deliver", value: "Prototype, build and refine" },
+    ],
   },
   {
-    title: "What we believe",
-    eyebrow: "The operating principle",
-    headline: "Disconnected strategies create disconnected results.",
-    body: "The strongest digital experiences align what a practice says, how it feels and how easily a patient can take the next step.",
+    title: "FORM Charleston",
+    eyebrow: "Featured work / 01",
+    headline: "From discovering the studio to booking a first class.",
+    body: "A fitness and wellness website connecting FORM's studio identity with first-visit guidance, two locations and a clear handoff into booking.",
+    items: [
+      { label: "Client", value: "FORM Charleston" },
+      { label: "Sector", value: "Lagree fitness" },
+      { label: "Scope", value: "Eight core routes" },
+      { label: "Platform", value: "Mariana Tek booking" },
+    ],
+    primaryCta: { label: "View case study", href: "/work/form-charleston" },
+    secondaryCta: { label: "Visit live website", href: "https://www.formcharleston.com/", external: true },
   },
   {
-    title: "The work",
-    eyebrow: "Built for momentum",
-    headline: "Useful ideas, made beautifully—and made to work.",
-    body: "The work balances brand distinction with commercial performance, creating digital systems that are memorable, practical and ready to scale.",
+    title: "Selected work",
+    eyebrow: "A wider view",
+    headline: "Different industries. One focus: make the next step clear.",
+    body: "Across consumer, healthcare and complex product experiences, the work is shaped around clarity, confidence and thoughtful interaction.",
+    items: [
+      { label: "02 / Blueshield", value: "Clearer healthcare decisions" },
+      { label: "03 / Cryptolabs OTC", value: "Trust in high-stakes workflows" },
+      { label: "04 / Activate Camera", value: "Guided camera interactions" },
+    ],
   },
   {
-    title: "Awards",
-    eyebrow: "The real measure",
-    headline: "Recognition is good. Real-world impact is better.",
-    body: "The aim is not decoration. It is better patient experiences, healthier acquisition costs and digital foundations that keep creating value.",
+    title: "Why work with me",
+    eyebrow: "A hands-on partner",
+    headline: "Clear thinking, careful craft and direct collaboration.",
+    body: "I stay close to the problem and the details, helping maintain continuity from early direction through the final experience.",
+    items: [
+      { label: "01", value: "Strategy and execution together" },
+      { label: "02", value: "Design decisions explained clearly" },
+      { label: "03", value: "Responsive and accessible thinking" },
+      { label: "04", value: "A practical path to implementation" },
+    ],
   },
   {
-    title: "Clients",
-    eyebrow: "Built around trust",
-    headline: "For teams ready to lead their category.",
-    body: "Best suited to ambitious clinics, healthcare founders and private practices that value strategy, move decisively and care about the details.",
+    title: "Engagements",
+    eyebrow: "Ways to work together",
+    headline: "Flexible scope. One considered standard of work.",
+    body: "Engagements can begin with a focused problem or cover a complete digital experience, depending on where the greatest value can be created.",
+    items: [
+      { label: "Product", value: "New experience or redesign" },
+      { label: "Website", value: "Strategy, design and build" },
+      { label: "Foundation", value: "UX audit or design system" },
+      { label: "Partnership", value: "Ongoing product design support" },
+    ],
   },
   {
     title: "Let's talk",
     eyebrow: "Start something meaningful",
-    headline: "Have a challenge worth going all in on?",
-    body: "Let’s turn it into a clearer position, a stronger experience and a connected growth system built for what comes next.",
+    headline: "Let's create something clear, useful and memorable.",
+    body: "If you have a product, service or digital experience that needs sharper direction, I would be glad to explore it with you.",
+    primaryCta: { label: "Start a conversation", href: "/contact" },
+    secondaryCta: { label: "Return home", href: "/" },
   },
 ] as const;
 
@@ -102,6 +159,7 @@ export default function PitchDeckModal({
     () => String(activeSlide + 1).padStart(2, "0"),
     [activeSlide]
   );
+  const slideTotal = String(slides.length).padStart(2, "0");
 
   useEffect(() => {
     if (!isOpen) return;
@@ -182,7 +240,7 @@ export default function PitchDeckModal({
       {isOpen ? (
         <motion.div
           ref={modalRef}
-          className="fixed inset-0 z-[9999] flex h-[100dvh] w-screen overflow-hidden bg-[#080808] text-[#f1f0ea]"
+          className="fixed inset-0 z-[9999] flex h-[var(--viewport-height)] w-screen overflow-hidden bg-[#080808] text-[#f1f0ea]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -192,7 +250,7 @@ export default function PitchDeckModal({
           aria-labelledby="pitch-deck-title"
         >
           <motion.aside
-            className="pitch-deck-scrollbar relative z-30 flex h-full w-[92px] shrink-0 flex-col overflow-y-auto border-r border-white/10 bg-black/80 backdrop-blur-md sm:w-[178px]"
+            className="pitch-deck-scrollbar relative z-30 flex h-full w-[clamp(5.25rem,12vw,11.125rem)] shrink-0 flex-col overflow-y-auto border-r border-white/10 bg-black/80 backdrop-blur-md"
             initial={{ x: -32, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -32, opacity: 0 }}
@@ -209,7 +267,7 @@ export default function PitchDeckModal({
                   }}
                   type="button"
                   onClick={() => setActiveSlide(index)}
-                  className={`group relative flex min-h-[68px] w-full shrink-0 items-center gap-2 border-b border-white/10 px-2 text-left transition-colors duration-300 sm:min-h-[78px] sm:gap-3 sm:px-3 ${
+                  className={`group relative flex min-h-[clamp(4.25rem,5.2vw,4.875rem)] w-full shrink-0 items-center gap-[var(--space-xs)] border-b border-white/10 px-[var(--space-xs)] text-left transition-colors duration-300 ${
                     isActive
                       ? "bg-[#e8e6df] text-[#11110f]"
                       : "bg-white/[0.025] text-white/70 hover:bg-white/10 hover:text-white"
@@ -255,7 +313,7 @@ export default function PitchDeckModal({
 
             <div className="absolute left-4 right-20 top-5 z-10 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.08em] text-white/55 sm:left-8 sm:right-28 sm:top-7 sm:text-[10px]">
               <span>AB / Portfolio</span>
-              <span className="hidden md:block">[ Pitch deck · {slideNumber} / 10 ]</span>
+              <span className="hidden md:block">[ Capability deck · {slideNumber} / {slideTotal} ]</span>
             </div>
 
             <button
@@ -278,7 +336,7 @@ export default function PitchDeckModal({
             <AnimatePresence mode="wait">
               <motion.section
                 key={activeSlide}
-                className="relative z-10 flex h-full flex-col px-5 pb-5 pt-24 sm:px-9 sm:pb-8 md:px-[6vw] md:pb-10 md:pt-[13vh]"
+                className="pitch-deck-scrollbar relative z-10 flex h-full flex-col overflow-y-auto px-[var(--container-x)] pb-[var(--space-md)] pt-[clamp(6rem,11dvh,8rem)]"
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -18 }}
@@ -296,16 +354,43 @@ export default function PitchDeckModal({
                   </h1>
                 </div>
 
-                <div className="mt-auto grid items-end gap-6 md:grid-cols-[1fr_minmax(280px,500px)]">
-                  <div className="hidden font-mono text-[10px] uppercase tracking-[0.08em] text-white/45 md:block">
-                    <span className="text-[#ff5f33]">●</span> {slideNumber} — {active.title}
+                <div className="mt-auto grid items-end gap-6 pt-10 lg:grid-cols-[minmax(0,1fr)_minmax(300px,500px)]">
+                  <div>
+                    {"items" in active && active.items ? (
+                      <ul className="grid gap-2 sm:grid-cols-2" aria-label={`${active.title} details`}>
+                        {active.items.map((item) => (
+                          <li key={`${item.label}-${item.value}`} className="min-h-[76px] border border-white/15 bg-black/20 p-3 backdrop-blur-sm sm:p-4">
+                            <span className="block font-mono text-[8px] uppercase tracking-[0.09em] text-[#ff805d] sm:text-[9px]">{item.label}</span>
+                            <span className="mt-2 block text-[13px] font-medium leading-[1.2] tracking-[-0.02em] text-white/90 sm:text-[15px]">{item.value}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="hidden font-mono text-[10px] uppercase tracking-[0.08em] text-white/45 lg:block">
+                        <span className="text-[#ff5f33]">●</span> {slideNumber} — {active.title}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <p className="max-w-[500px] text-[clamp(1rem,1.55vw,1.45rem)] font-medium leading-[1.16] tracking-[-0.03em] text-white/90">
                       {active.body}
                     </p>
+                    {("primaryCta" in active && active.primaryCta) || ("secondaryCta" in active && active.secondaryCta) ? (
+                      <div className="mt-5 flex flex-wrap gap-2">
+                        {"primaryCta" in active && active.primaryCta ? (
+                          <Link href={active.primaryCta.href} onClick={onClose} className="inline-flex min-h-11 items-center justify-center bg-[#f1f0ea] px-5 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-[#171717] transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+                            {active.primaryCta.label}<span className="ml-4" aria-hidden="true">↗</span>
+                          </Link>
+                        ) : null}
+                        {"secondaryCta" in active && active.secondaryCta ? (
+                          <a href={active.secondaryCta.href} onClick={"external" in active.secondaryCta && active.secondaryCta.external ? undefined : onClose} target={"external" in active.secondaryCta && active.secondaryCta.external ? "_blank" : undefined} rel={"external" in active.secondaryCta && active.secondaryCta.external ? "noopener noreferrer" : undefined} className="inline-flex min-h-11 items-center justify-center border border-white/30 px-5 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-white transition-colors hover:border-white hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+                            {active.secondaryCta.label}<span className="ml-4" aria-hidden="true">↗</span>
+                          </a>
+                        ) : null}
+                      </div>
+                    ) : null}
                     <div className="mt-6 flex items-center justify-between border-t border-white/25 pt-3 font-mono text-[9px] uppercase tracking-[0.08em] text-white/60 sm:text-[10px]">
-                      <span>{slideNumber} / 10</span>
+                      <span>{slideNumber} / {slideTotal}</span>
                       <div className="flex gap-5">
                         <button
                           type="button"
@@ -336,6 +421,13 @@ export default function PitchDeckModal({
                 </div>
               </motion.section>
             </AnimatePresence>
+            <div className="absolute bottom-0 left-0 right-0 z-20 h-[2px] bg-white/10" aria-hidden="true">
+              <motion.div
+                className="h-full bg-[#ff5f33]"
+                animate={{ width: `${((activeSlide + 1) / slides.length) * 100}%` }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              />
+            </div>
           </main>
         </motion.div>
       ) : null}
